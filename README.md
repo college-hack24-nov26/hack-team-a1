@@ -1,5 +1,4 @@
-# BUILD TRI — Stage-Gated AI SaaS IDE Extension
-
+# BUILD TRI — Stage-Gated AI SaaS IDE 
 **BUILD TRI** is an advanced developer extension and framework for building software applications across 8 rigorous lifecycle stages with provenance tracking, automated secret scanning, test verification, traceability, and AI collaboration.
 
 ---
