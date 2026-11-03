@@ -6,11 +6,13 @@
 ## 🚀 Key Features
 
 1. **8-Stage Governance & Gates**:
-   - **Requirement**: Define and approve functional & technical specifications (`REQ-1..n`).
+   - **user rRequirement**: Define and approve functional & technical specifications (`REQ-1..n`).
    - **Plan**: Structured implementation roadmap and milestone verification.
    - **Design**: Architecture diagrams, schema definitions, and design docs.
    - **Task**: Granular task breakdown linked to requirements.
    - **Build**: Three-lane development (`Vibe`, `Hybrid`, `Manual`) with provenance tracking (`.buildtri/provenance.json`).
+   - security >
+   - go production > 
    - **Test**: Automated test execution and gate passage enforcement.
    - **Review**: Static security audits, code inspection, and secret detection.
    - **Release & Deploy**: Final release packaging, changelog generation, and deployment checks.
@@ -38,7 +40,7 @@
 │   ├── compare.ts       # Lane comparison & diff analytics
 │   ├── extension.ts     # VS Code extension entry point
 │   ├── gates.ts         # Stage gating rules and validator
-│   ├── lanes.ts         # Three-lane provenance state manager
+│   ├── lanes.ts        
 │   ├── model.ts         # Core requirements and task models
 │   ├── panel.ts         # Studio Webview controller & IPC bridge
 │   ├── provenance.ts    # File tracking and hash verification
@@ -51,26 +53,5 @@
 ├── ui-placeholder/      # Clean, nonce-secured Webview Studio UI
 ├── package.json
 └── tsconfig.json
-```
-
----
-
-## 🛠️ Development & Commands
-
-```bash
-# Install dependencies
-npm install
-
-# Run typecheck
-npm run typecheck
-
-# Run test suite
-npm test
-
-# Build extension bundle
-npm run build
-
-# Synchronize and bundle into local VS Code fork
-powershell -ExecutionPolicy Bypass -File scripts\sync-to-fork.ps1
 ```
 
