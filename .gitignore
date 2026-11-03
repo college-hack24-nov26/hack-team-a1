@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out/
+build/
+*.vsix
+
+# Nested VS Code Fork repository
+vscode/
+
+# Local backups & scratch
+backups/
+scratch/
+test-workspace/
+
+# Runtime state & logs
+.buildtri/
+.buildtri-shared/
+*.log
+*.tmp
+
+# Environment & credentials
+.env
+.env.*
+!.env.example
+
+# OS metadata
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store
+

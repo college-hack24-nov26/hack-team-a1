@@ -1,0 +1,111 @@
+{
+  "name": "buildtri",
+  "displayName": "Buildtri",
+  "description": "Stage-gated IDE for building apps in any language or framework.",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onView:buildtri.statusView",
+    "onCommand:buildtri.open",
+    "onCommand:buildtri.loadDemoData",
+    "onCommand:buildtri.resetState",
+    "onCommand:buildtri.approveHybrid",
+    "onCommand:buildtri.markVibe",
+    "onCommand:buildtri.markManual",
+    "onCommand:buildtri.scanSecrets"
+  ],
+  "contributes": {
+    "configurationDefaults": {
+      "workbench.sideBar.location": "left",
+      "chat.titleBar.openInAgentsWindow.enabled": false,
+      "chat.titleBar.signIn.enabled": false,
+      "workbench.layoutControl.enabled": false
+    },
+    "commands": [
+      {
+        "command": "buildtri.open",
+        "title": "Buildtri: Open Studio",
+        "icon": "$(layout-sidebar-right)"
+      },
+      {
+        "command": "buildtri.refreshState",
+        "title": "Buildtri: Refresh State",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "buildtri.loadDemoData",
+        "title": "Buildtri: Load Demo Data"
+      },
+      {
+        "command": "buildtri.resetState",
+        "title": "Buildtri: Reset State"
+      },
+      {
+        "command": "buildtri.approveHybrid",
+        "title": "Buildtri: Approve as Hybrid"
+      },
+      {
+        "command": "buildtri.markVibe",
+        "title": "Buildtri: Mark Active File as Vibe (dev)"
+      },
+      {
+        "command": "buildtri.markManual",
+        "title": "Buildtri: Mark Active File as Manual (dev)"
+      },
+      {
+        "command": "buildtri.scanSecrets",
+        "title": "Buildtri: Scan Workspace for Secrets"
+      },
+      {
+        "command": "buildtri.refreshTraceability",
+        "title": "Buildtri: Refresh Traceability"
+      },
+      {
+        "command": "buildtri.setApiKey",
+        "title": "Buildtri: Set Gemini API Key"
+      },
+      {
+        "command": "buildtri.clearApiKey",
+        "title": "Buildtri: Clear Gemini API Key"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "buildtri-sidebar",
+          "title": "Buildtri",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "buildtri-sidebar": [
+        {
+          "type": "webview",
+          "id": "buildtri.statusView",
+          "name": "Buildtri Gate Status"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "build:test": "esbuild ./test/all.test.ts --bundle --outfile=dist/test.js --alias:vscode=./test/mock-vscode.js --format=cjs --platform=node",
+    "test": "npm run build:test && node --test dist/test.js",
+    "watch": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}
