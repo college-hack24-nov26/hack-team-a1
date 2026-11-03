@@ -11,8 +11,11 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onView:buildtri.statusView",
+    "onStartupFinished",
+    "onView:buildtri.panel",
+    "onView:buildtri.aiPanel",
     "onCommand:buildtri.open",
+    "onCommand:buildtri.focusAiPanel",
     "onCommand:buildtri.loadDemoData",
     "onCommand:buildtri.resetState",
     "onCommand:buildtri.approveHybrid",
@@ -23,8 +26,7 @@
   "contributes": {
     "configurationDefaults": {
       "workbench.sideBar.location": "left",
-      "chat.titleBar.openInAgentsWindow.enabled": false,
-      "chat.titleBar.signIn.enabled": false,
+      "workbench.activityBar.location": "hidden",
       "workbench.layoutControl.enabled": false
     },
     "commands": [
@@ -32,6 +34,10 @@
         "command": "buildtri.open",
         "title": "Buildtri: Open Studio",
         "icon": "$(layout-sidebar-right)"
+      },
+      {
+        "command": "buildtri.focusAiPanel",
+        "title": "Buildtri: Focus AI Panel"
       },
       {
         "command": "buildtri.refreshState",
@@ -75,21 +81,37 @@
         "title": "Buildtri: Clear Gemini API Key"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
+    "menus": {
+      "view/title": [
         {
-          "id": "buildtri-sidebar",
-          "title": "Buildtri",
+          "command": "buildtri.open",
+          "when": "view == buildtri.panel",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "secondarySidebar": [
+        {
+          "id": "buildtri-ai-container",
+          "title": "Buildtri AI",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "views": {
-      "buildtri-sidebar": [
+      "explorer": [
         {
           "type": "webview",
-          "id": "buildtri.statusView",
-          "name": "Buildtri Gate Status"
+          "id": "buildtri.panel",
+          "name": "BUILD TRI"
+        }
+      ],
+      "buildtri-ai-container": [
+        {
+          "type": "webview",
+          "id": "buildtri.aiPanel",
+          "name": "Buildtri AI"
         }
       ]
     }

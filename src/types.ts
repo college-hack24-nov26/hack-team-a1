@@ -117,6 +117,30 @@ export interface BuildConfig {
   buildCommand: string;
   testPathRegex?: string;
   aiModel?: string;
+  stageFiles?: Record<string, string[]>;
+  deployCommand?: string;
+}
+
+export type StageFileStatus = 'missing' | 'template' | 'filled' | 'ai-draft' | 'reviewed';
+
+export interface StageFileInfo {
+  exists: boolean;
+  empty: boolean;
+  isTemplate: boolean;
+  content?: string;
+}
+
+export interface StageFileContext {
+  files?: Record<string, StageFileInfo>;
+  prdReqTags?: string[];
+}
+
+export interface StageFileItem {
+  path: string;
+  name: string;
+  status: StageFileStatus;
+  exists: boolean;
+  isMd: boolean;
 }
 
 export interface ImpactFileItem {

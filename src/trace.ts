@@ -41,6 +41,14 @@ export function extractTags(text: string): TagOccurrence[] {
 }
 
 /**
+ * PURE FUNCTION: Convenience helper to extract unique REQ IDs from text.
+ */
+export function extractReqTags(text: string): string[] {
+  const occurrences = extractTags(text);
+  return Array.from(new Set(occurrences.map((o) => o.req)));
+}
+
+/**
  * PURE FUNCTION: Builds the traceability impact map and orphan tag list.
  * Classifies files as tests if their path matches testPathRegex.
  * Limits lines to at most 20 per file.

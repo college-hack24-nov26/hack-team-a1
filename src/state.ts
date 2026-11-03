@@ -4,7 +4,12 @@ import * as fs from 'fs';
 import {
   BuildtriState,
   Provenance,
-  BuildConfig
+  BuildConfig,
+  StageId,
+  CodeLane,
+  StageFileContext,
+  StageFileInfo,
+  StageFileItem
 } from './types';
 import {
   BUILDTRI_DIR_NAME,
@@ -19,7 +24,10 @@ import {
   DEMO_TASKS,
   DEMO_DESIGNS,
   RELEASE_NOTES_FILE_NAME,
-  DEFAULT_DEPLOY_CHECKLIST
+  DEFAULT_DEPLOY_CHECKLIST,
+  STAGE_ORDER,
+  getStageFilesForStage,
+  validateStageFilePath
 } from './constants';
 import { refreshStageStatuses, executeGateRun, GateRunResult } from './gates';
 import {
@@ -33,7 +41,12 @@ import {
   ModelOperationResult
 } from './model';
 import { applyLaneSet, removeFile, ApplyLaneResult } from './provenance';
-import { StageId, CodeLane } from './types';
+import {
+  getTemplateForFile,
+  isTemplateContent,
+  computeFileStatus
+} from './templates';
+import { extractReqTags } from './trace';
 
 /**
  * StateManager handles reading and writing all files within /.buildtri/.
@@ -60,6 +73,189 @@ export class StateManager {
     this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
     this.provenance = JSON.parse(JSON.stringify(INITIAL_PROVENANCE));
     this.config = JSON.parse(JSON.stringify(INITIAL_CONFIG));
+  }
+
+  /**
+   * Scans stage files on disk to build a StageFileContext.
+   */
+  public getStageFileContext(targetStageId?: StageId): StageFileContext {
+    const fileMap: Record<string, StageFileInfo> = {};
+    let prdReqTags: string[] = [];
+
+    const stagesToCheck = targetStageId ? [targetStageId] : STAGE_ORDER;
+
+    for (const sId of stagesToCheck) {
+      const stageFilesRes = getStageFilesForStage(sId, this.config, this.provenance);
+      for (const relPath of stageFilesRes.validFiles) {
+        if (fileMap[relPath]) continue;
+
+        const absPath = path.isAbsolute(relPath) ? relPath : path.join(this.workspaceRoot, relPath);
+        const exists = fs.existsSync(absPath);
+
+        if (!exists) {
+          fileMap[relPath] = { exists: false, empty: true, isTemplate: false };
+        } else {
+          try {
+            const stat = fs.statSync(absPath);
+            if (stat.size === 0) {
+              fileMap[relPath] = { exists: true, empty: true, isTemplate: false, content: '' };
+            } else {
+              const content = fs.readFileSync(absPath, 'utf8');
+              const empty = content.trim().length === 0;
+              const template = getTemplateForFile(relPath, this.state);
+              const isTemplate = isTemplateContent(content, template);
+              fileMap[relPath] = { exists: true, empty, isTemplate, content };
+
+              if (relPath === 'docs/PRD.md') {
+                prdReqTags = extractReqTags(content);
+              }
+            }
+          } catch {
+            fileMap[relPath] = { exists: false, empty: true, isTemplate: false };
+          }
+        }
+      }
+    }
+
+    return { files: fileMap, prdReqTags };
+  }
+
+  /**
+   * Helper that refreshes stage statuses incorporating disk fileContext.
+   */
+  public refreshStatuses(baseState?: BuildtriState, options?: { preserveBlockedStageId?: StageId }): BuildtriState {
+    const stateToUse = baseState || this.state;
+    const fileContext = this.getStageFileContext();
+    const refreshed = refreshStageStatuses(stateToUse, this.config, this.provenance, {
+      preserveBlockedStageId: options?.preserveBlockedStageId,
+      fileContext
+    });
+    this.state = refreshed;
+    return refreshed;
+  }
+
+  /**
+   * Gets list of stage files for a stage, with computed live statuses.
+   */
+  public getStageFiles(stageId: StageId): { validFiles: StageFileItem[]; invalidFiles: { path: string; reason: string }[] } {
+    const res = getStageFilesForStage(stageId, this.config, this.provenance);
+    const validFiles: StageFileItem[] = res.validFiles.map((relPath) => {
+      const absPath = path.isAbsolute(relPath) ? relPath : path.join(this.workspaceRoot, relPath);
+      const exists = fs.existsSync(absPath);
+      const status = computeFileStatus(relPath, this.workspaceRoot, this.provenance, this.state);
+      return {
+        path: relPath,
+        name: path.basename(relPath),
+        status,
+        exists,
+        isMd: relPath.toLowerCase().endsWith('.md')
+      };
+    });
+    return { validFiles, invalidFiles: res.invalidFiles };
+  }
+
+  /**
+   * Creates a file from its template.
+   * Never overwrites an existing file; if it exists, simply returns existing path.
+   */
+  public async createFileFromTemplate(relPath: string): Promise<{ created: boolean; path: string; error?: string }> {
+    const check = validateStageFilePath(relPath);
+    if (!check.valid) {
+      return { created: false, path: relPath, error: check.reason };
+    }
+
+    const absPath = path.isAbsolute(relPath) ? relPath : path.join(this.workspaceRoot, relPath);
+    if (fs.existsSync(absPath)) {
+      return { created: false, path: absPath };
+    }
+
+    try {
+      const parentDir = path.dirname(absPath);
+      if (!fs.existsSync(parentDir)) {
+        fs.mkdirSync(parentDir, { recursive: true });
+      }
+
+      const template = getTemplateForFile(relPath, this.state);
+      fs.writeFileSync(absPath, template, 'utf8');
+
+      // Refresh statuses live
+      this.state = this.refreshStatuses();
+      await this.saveState();
+
+      return { created: true, path: absPath };
+    } catch (err: any) {
+      return { created: false, path: absPath, error: err?.message || 'Failed to create file' };
+    }
+  }
+
+  /**
+   * Saves an AI-generated draft to the file path.
+   * Rejects if file already exists with real content unless overwriteConfirmed is true.
+   * Automatically marks the saved file as lane: 'vibe', reviewed: false in provenance.
+   */
+  public async saveDraftFile(
+    relPath: string,
+    content: string,
+    overwriteConfirmed = false
+  ): Promise<{ success: boolean; error?: string; path?: string }> {
+    const check = validateStageFilePath(relPath);
+    if (!check.valid) {
+      return { success: false, error: check.reason };
+    }
+
+    const absPath = path.isAbsolute(relPath) ? relPath : path.join(this.workspaceRoot, relPath);
+
+    if (fs.existsSync(absPath)) {
+      try {
+        const existing = fs.readFileSync(absPath, 'utf8');
+        const template = getTemplateForFile(relPath, this.state);
+        const hasRealContent = existing.trim().length > 0 && !isTemplateContent(existing, template);
+        if (hasRealContent && !overwriteConfirmed) {
+          return {
+            success: false,
+            error: 'File already exists with real content. Overwrite confirmation required.'
+          };
+        }
+      } catch (err: any) {
+        return { success: false, error: err?.message || 'Failed to check existing file' };
+      }
+    }
+
+    try {
+      const parentDir = path.dirname(absPath);
+      if (!fs.existsSync(parentDir)) {
+        fs.mkdirSync(parentDir, { recursive: true });
+      }
+
+      fs.writeFileSync(absPath, content, 'utf8');
+
+      // Tag the file as vibe, reviewed: false in provenance
+      await this.setLane(relPath, 'vibe');
+
+      // Refresh stage statuses
+      this.state = this.refreshStatuses();
+      await this.saveState();
+
+      return { success: true, path: absPath };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Failed to write file' };
+    }
+  }
+
+  /**
+   * Approves an AI draft file as Hybrid (reviewed: true).
+   */
+  public async approveHybridFile(relPath: string): Promise<ApplyLaneResult> {
+    return await this.setLane(relPath, 'hybrid');
+  }
+
+  /**
+   * Forces a live refresh of all states and file statuses.
+   */
+  public async refreshLiveState(): Promise<void> {
+    this.state = this.refreshStatuses();
+    this.onDidChangeStateEmitter.fire(this.state);
+    this.onDidChangeProvenanceEmitter.fire(this.provenance);
   }
 
   /**
@@ -91,7 +287,7 @@ export class StateManager {
 
     // Refresh stage statuses and reasons on startup
     const blockedStage = this.state.stages.find((s) => s.status === 'blocked');
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance, {
+    this.state = this.refreshStatuses(this.state, {
       preserveBlockedStageId: blockedStage?.id
     });
     await this.saveState();
@@ -150,7 +346,7 @@ export class StateManager {
       try {
         const raw = fs.readFileSync(configPath, 'utf8');
         this.config = JSON.parse(raw);
-        this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+        this.state = this.refreshStatuses();
         this.onDidChangeStateEmitter.fire(this.state);
       } catch (err) {
         console.error('Failed to reload config.json:', err);
@@ -215,7 +411,7 @@ export class StateManager {
     await this.saveProvenance();
 
     // Recompute stage statuses (Rule: clear blocked, update gate reasons live)
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+    this.state = this.refreshStatuses();
     await this.saveState();
 
     return res;
@@ -230,7 +426,7 @@ export class StateManager {
     await this.saveProvenance();
 
     // Recompute stage statuses
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+    this.state = this.refreshStatuses();
     await this.saveState();
   }
 
@@ -240,7 +436,8 @@ export class StateManager {
    * If blocked, marks the stage blocked with reasons.
    */
   public async runGate(stageId: StageId): Promise<GateRunResult> {
-    const result = executeGateRun(stageId, this.state, this.config, this.provenance);
+    const fileContext = this.getStageFileContext();
+    const result = executeGateRun(stageId, this.state, this.config, this.provenance, fileContext);
     this.state = result.newState;
     await this.saveState();
     return result;
@@ -259,7 +456,7 @@ export class StateManager {
     this.state.scan = null;
 
     // Clear blocked status and refresh stage statuses
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+    this.state = this.refreshStatuses();
     await this.saveState();
   }
 
@@ -270,7 +467,7 @@ export class StateManager {
     this.state = JSON.parse(JSON.stringify(INITIAL_STATE));
     this.state.codeChangedAt = null;
     this.state.scan = null;
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+    this.state = this.refreshStatuses();
     await this.saveState();
   }
 
@@ -283,7 +480,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -296,7 +493,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -309,7 +506,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -322,7 +519,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -335,7 +532,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -348,7 +545,7 @@ export class StateManager {
     if (!res.ok || !res.newState) {
       return res;
     }
-    this.state = refreshStageStatuses(res.newState, this.config, this.provenance);
+    this.state = this.refreshStatuses(res.newState);
     await this.saveState();
     return { ok: true, newState: this.state };
   }
@@ -369,7 +566,7 @@ export class StateManager {
    */
   public async markCodeChanged(): Promise<void> {
     this.state.codeChangedAt = new Date().toISOString();
-    this.state = refreshStageStatuses(this.state, this.config, this.provenance);
+    this.state = this.refreshStatuses();
     await this.saveState();
   }
 

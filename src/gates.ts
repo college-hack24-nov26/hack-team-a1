@@ -3,9 +3,11 @@ import {
   BuildtriState,
   BuildConfig,
   Provenance,
-  Stage
+  Stage,
+  StageFileContext
 } from './types';
-import { STAGE_ORDER } from './constants';
+import { STAGE_ORDER, getStageFilesForStage } from './constants';
+import { extractReqTags } from './trace';
 
 export interface GateResult {
   ok: boolean;
@@ -20,15 +22,40 @@ export interface GateRunResult {
 }
 
 /**
+ * Checks whether required stage files exist, are non-empty, and differ from their template.
+ */
+function checkStageFiles(
+  stageId: StageId,
+  config: BuildConfig,
+  provenance: Provenance | undefined,
+  fileContext: StageFileContext | undefined,
+  reasons: string[]
+): void {
+  if (!fileContext || !fileContext.files) {
+    return;
+  }
+  const stageFilesResult = getStageFilesForStage(stageId, config, provenance);
+  for (const filePath of stageFilesResult.validFiles) {
+    const fileInfo = fileContext.files[filePath];
+    if (!fileInfo || !fileInfo.exists || fileInfo.empty) {
+      reasons.push(`${filePath} is missing.`);
+    } else if (fileInfo.isTemplate) {
+      reasons.push(`${filePath} is still the template.`);
+    }
+  }
+}
+
+/**
  * PURE FUNCTION: computeGate evaluates stage gating rules based purely
- * on the provided state, config, and provenance data.
- * No VS Code API, no file system access.
+ * on the provided state, config, provenance data, and optional fileContext.
+ * No VS Code API, no direct file system access.
  */
 export function computeGate(
   stageId: StageId,
   state: BuildtriState,
   config?: BuildConfig,
-  provenance?: Provenance
+  provenance?: Provenance,
+  fileContext?: StageFileContext
 ): GateResult {
   const safeConfig = config || ({} as BuildConfig);
   const reasons: string[] = [];
@@ -50,6 +77,9 @@ export function computeGate(
           }
         }
       }
+
+      // Stage file check: docs/USER_REQUIREMENT.md
+      checkStageFiles('requirement', safeConfig, provenance, fileContext, reasons);
       break;
     }
 
@@ -76,6 +106,26 @@ export function computeGate(
         for (const req of state.reqs) {
           if (!coveredReqIds.has(req.id)) {
             reasons.push(`${req.id} is not covered by any task in the plan.`);
+          }
+        }
+      }
+
+      // Stage files check: docs/PRD.md, docs/TRD.md
+      checkStageFiles('plan', safeConfig, provenance, fileContext, reasons);
+
+      // plan also: docs/PRD.md must contain a tag for EVERY existing REQ id
+      if (fileContext && fileContext.files && Array.isArray(state.reqs) && state.reqs.length > 0) {
+        const prdInfo = fileContext.files['docs/PRD.md'];
+        if (prdInfo && prdInfo.exists && !prdInfo.empty && !prdInfo.isTemplate) {
+          let prdTags: string[] = fileContext.prdReqTags || [];
+          if (!prdTags.length && prdInfo.content) {
+            prdTags = extractReqTags(prdInfo.content);
+          }
+          const tagSet = new Set(prdTags);
+          for (const req of state.reqs) {
+            if (!tagSet.has(req.id)) {
+              reasons.push(`PRD.md does not mention ${req.id}.`);
+            }
           }
         }
       }
@@ -108,6 +158,9 @@ export function computeGate(
           }
         }
       }
+
+      // Stage file check: docs/DESIGN.md
+      checkStageFiles('design', safeConfig, provenance, fileContext, reasons);
       break;
     }
 
@@ -145,6 +198,9 @@ export function computeGate(
           reasons.push('Code changed since the last test run.');
         }
       }
+
+      // Stage file check: docs/TEST_PLAN.md
+      checkStageFiles('test', safeConfig, provenance, fileContext, reasons);
       break;
     }
 
@@ -186,6 +242,9 @@ export function computeGate(
           reasons.push('Code changed since the last security run.');
         }
       }
+
+      // Stage file check: docs/SECURITY.md
+      checkStageFiles('security', safeConfig, provenance, fileContext, reasons);
       break;
     }
 
@@ -210,7 +269,7 @@ export function computeGate(
       }
 
       // 2. Build gate check (no vibe files without reviewed=true)
-      const buildGate = computeGate('build', state, config, provenance);
+      const buildGate = computeGate('build', state, config, provenance, fileContext);
       if (!buildGate.ok) {
         for (const r of buildGate.reasons) {
           reasons.push(`build: ${r}`);
@@ -218,7 +277,7 @@ export function computeGate(
       }
 
       // 3. Test gate check (including freshness against codeChangedAt)
-      const testGate = computeGate('test', state, config, provenance);
+      const testGate = computeGate('test', state, config, provenance, fileContext);
       if (!testGate.ok) {
         for (const r of testGate.reasons) {
           reasons.push(`test: ${r}`);
@@ -226,7 +285,7 @@ export function computeGate(
       }
 
       // 4. Security gate check
-      const secGate = computeGate('security', state, config, provenance);
+      const secGate = computeGate('security', state, config, provenance, fileContext);
       if (!secGate.ok) {
         for (const r of secGate.reasons) {
           reasons.push(`security: ${r}`);
@@ -285,7 +344,7 @@ export function refreshStageStatuses(
   state: BuildtriState,
   config: BuildConfig,
   provenance: Provenance,
-  options?: { preserveBlockedStageId?: StageId }
+  options?: { preserveBlockedStageId?: StageId; fileContext?: StageFileContext }
 ): BuildtriState {
   const cloned: BuildtriState = JSON.parse(JSON.stringify(state));
 
@@ -313,11 +372,11 @@ export function refreshStageStatuses(
       // First stage that is not done
       if (options?.preserveBlockedStageId === stageId) {
         stageObj.status = 'blocked';
-        const gate = computeGate(stageId, cloned, config, provenance);
+        const gate = computeGate(stageId, cloned, config, provenance, options?.fileContext);
         stageObj.reasons = gate.reasons.length > 0 ? gate.reasons : ['Gate criteria blocked.'];
       } else {
         stageObj.status = 'active';
-        const gate = computeGate(stageId, cloned, config, provenance);
+        const gate = computeGate(stageId, cloned, config, provenance, options?.fileContext);
         stageObj.reasons = gate.ok
           ? ['All gate criteria met. Ready to complete stage.']
           : gate.reasons;
@@ -344,7 +403,8 @@ export function executeGateRun(
   stageId: StageId,
   state: BuildtriState,
   config: BuildConfig,
-  provenance: Provenance
+  provenance: Provenance,
+  fileContext?: StageFileContext
 ): GateRunResult {
   const currentStage = state.stages.find((s) => s.id === stageId);
 
@@ -376,7 +436,7 @@ export function executeGateRun(
   }
 
   // Evaluate the gate
-  const gateResult = computeGate(stageId, state, config, provenance);
+  const gateResult = computeGate(stageId, state, config, provenance, fileContext);
 
   if (gateResult.ok) {
     // Gate passes: mark this stage as done
@@ -388,7 +448,7 @@ export function executeGateRun(
     }
 
     // Refresh stage statuses to activate the next stage
-    const updatedState = refreshStageStatuses(cloned, config, provenance);
+    const updatedState = refreshStageStatuses(cloned, config, provenance, { fileContext });
 
     return {
       ok: true,
@@ -422,13 +482,14 @@ export function checkGateWarning(
   stageId: StageId,
   state: BuildtriState,
   config?: BuildConfig,
-  provenance?: Provenance
+  provenance?: Provenance,
+  fileContext?: StageFileContext
 ): string | undefined {
   const stage = state.stages.find((s) => s.id === stageId);
   if (!stage || stage.status !== 'done') {
     return undefined;
   }
-  const result = computeGate(stageId, state, config, provenance);
+  const result = computeGate(stageId, state, config, provenance, fileContext);
   if (!result.ok && result.reasons.length > 0) {
     return `Gate no longer satisfied: ${result.reasons.join('; ')}`;
   }

@@ -136,6 +136,115 @@ export const INITIAL_CONFIG: BuildConfig = {
   lintCommand: '',
   buildCommand: '',
   testPathRegex: DEFAULT_TEST_PATH_REGEX,
-  aiModel: ''
+  aiModel: '',
+  stageFiles: {
+    requirement: ['docs/USER_REQUIREMENT.md'],
+    plan: ['docs/PRD.md', 'docs/TRD.md'],
+    design: ['docs/DESIGN.md'],
+    build: [],
+    test: ['docs/TEST_PLAN.md'],
+    security: ['docs/SECURITY.md'],
+    release: ['.buildtri/release-notes.md'],
+    deploy: []
+  }
 };
+
+/**
+ * Default stage files specification per stage.
+ */
+export const DEFAULT_STAGE_FILES: Record<StageId, string[]> = {
+  requirement: ['docs/USER_REQUIREMENT.md'],
+  plan: ['docs/PRD.md', 'docs/TRD.md'],
+  design: ['docs/DESIGN.md'],
+  build: [],
+  test: ['docs/TEST_PLAN.md'],
+  security: ['docs/SECURITY.md'],
+  release: ['.buildtri/release-notes.md'],
+  deploy: []
+};
+
+/**
+ * PURE FUNCTION: Validates a stage file path according to security and workspace rules:
+ * - Must be relative (no leading slash, no Windows drive letter)
+ * - Cannot contain ".." (no directory traversal)
+ * - Must be inside workspace
+ * - Cannot be under node_modules/
+ * - Cannot be under .buildtri/ (except .buildtri/release-notes.md for the release stage)
+ */
+export function validateStageFilePath(
+  filePath: string,
+  stageId?: StageId
+): { valid: boolean; reason?: string } {
+  if (!filePath || typeof filePath !== 'string' || !filePath.trim()) {
+    return { valid: false, reason: 'File path cannot be empty.' };
+  }
+
+  const trimmed = filePath.trim();
+
+  // Check if absolute (Windows drive letter or leading slash)
+  if (/^[a-zA-Z]:[\\/]/.test(trimmed) || trimmed.startsWith('/') || trimmed.startsWith('\\')) {
+    return { valid: false, reason: 'Path must be relative, not absolute.' };
+  }
+
+  // Check no ".."
+  const parts = trimmed.split(/[\\/]/);
+  if (parts.includes('..')) {
+    return { valid: false, reason: "Path cannot contain '..'." };
+  }
+
+  // Check node_modules
+  const normalized = trimmed.replace(/\\/g, '/');
+  if (normalized.startsWith('node_modules/') || normalized === 'node_modules') {
+    return { valid: false, reason: 'Path cannot be inside node_modules/.' };
+  }
+
+  // Check .buildtri (only .buildtri/release-notes.md is allowed for the release stage)
+  if (normalized.startsWith('.buildtri/') || normalized === '.buildtri') {
+    if (stageId === 'release' && normalized === '.buildtri/release-notes.md') {
+      return { valid: true };
+    }
+    return { valid: false, reason: 'Path cannot be inside .buildtri/.' };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * PURE FUNCTION: Resolves and validates stage files for a given stage.
+ * Returns valid file paths and any rejected file paths with their reasons.
+ */
+export function getStageFilesForStage(
+  stageId: StageId,
+  config?: BuildConfig,
+  provenance?: Provenance
+): { validFiles: string[]; invalidFiles: { path: string; reason: string }[] } {
+  if (stageId === 'deploy') {
+    return { validFiles: [], invalidFiles: [] };
+  }
+
+  if (stageId === 'build') {
+    // Build stage files are dynamically resolved from code files tracked in provenance.json
+    const files = (provenance?.files || []).map((f) => f.path);
+    return { validFiles: files, invalidFiles: [] };
+  }
+
+  let configuredList = config?.stageFiles?.[stageId];
+  if (!configuredList || !Array.isArray(configuredList)) {
+    configuredList = DEFAULT_STAGE_FILES[stageId] || [];
+  }
+
+  const validFiles: string[] = [];
+  const invalidFiles: { path: string; reason: string }[] = [];
+
+  for (const rawPath of configuredList) {
+    const check = validateStageFilePath(rawPath, stageId);
+    if (check.valid) {
+      validFiles.push(rawPath.replace(/\\/g, '/'));
+    } else {
+      invalidFiles.push({ path: rawPath, reason: check.reason || 'Invalid path.' });
+    }
+  }
+
+  return { validFiles, invalidFiles };
+}
 

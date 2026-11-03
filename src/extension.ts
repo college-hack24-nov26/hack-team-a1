@@ -2,12 +2,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { StateManager } from './state';
 import { BuildtriSidebarProvider } from './sidebar';
+import { BuildtriAiViewProvider } from './aipanel';
 import { BuildtriStudioPanel } from './panel';
 import { LanesManager } from './lanes';
 import { CommandRunner } from './runner';
 import { SecretScanner } from './scan';
 import { TraceabilityScanner } from './trace';
 import { GeminiClient } from './ai';
+import { StageId } from './types';
 
 let stateManager: StateManager | undefined;
 let lanesManager: LanesManager | undefined;
@@ -15,6 +17,8 @@ let runner: CommandRunner | undefined;
 let scanner: SecretScanner | undefined;
 let traceabilityScanner: TraceabilityScanner | undefined;
 let geminiClient: GeminiClient | undefined;
+let sidebarProvider: BuildtriSidebarProvider | undefined;
+let aiProvider: BuildtriAiViewProvider | undefined;
 
 /**
  * Extension activation entry point for Buildtri.
@@ -40,7 +44,32 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push(traceabilityScanner);
   await traceabilityScanner.scanWorkspace();
 
-  // File watcher for code changes (M6: sets state.codeChangedAt)
+  // Initialize LanesManager (decorations, status bar, and lane actions)
+  lanesManager = new LanesManager(context, stateManager, workspaceRoot);
+  context.subscriptions.push(lanesManager);
+
+  // Register Activity Bar Sidebar View Provider (LEFT view)
+  sidebarProvider = new BuildtriSidebarProvider(context.extensionUri, stateManager);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      BuildtriSidebarProvider.viewType,
+      sidebarProvider
+    )
+  );
+
+  // Register Secondary Sidebar View Provider (RIGHT Buildtri AI view)
+  aiProvider = new BuildtriAiViewProvider(context.extensionUri, stateManager, geminiClient);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      BuildtriAiViewProvider.viewType,
+      aiProvider
+    )
+  );
+
+  // Connect sidebar to AI provider
+  sidebarProvider.setAiViewProvider(aiProvider);
+
+  // File watcher for code and documentation changes
   const codeWatcher = vscode.workspace.createFileSystemWatcher('**/*');
   const isIgnored = (uri: vscode.Uri) => {
     const rel = path.relative(workspaceRoot, uri.fsPath).replace(/\\/g, '/');
@@ -57,6 +86,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const handleFileChange = async (uri: vscode.Uri) => {
     if (!isIgnored(uri) && stateManager) {
       await stateManager.markCodeChanged();
+      sidebarProvider?.updateView();
+      aiProvider?.updateView();
       if (BuildtriStudioPanel.currentPanel) {
         BuildtriStudioPanel.currentPanel.broadcastState();
       }
@@ -67,19 +98,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   codeWatcher.onDidChange(handleFileChange, null, context.subscriptions);
   codeWatcher.onDidDelete(handleFileChange, null, context.subscriptions);
   context.subscriptions.push(codeWatcher);
-
-  // Initialize LanesManager (decorations, status bar, and lane actions)
-  lanesManager = new LanesManager(context, stateManager, workspaceRoot);
-  context.subscriptions.push(lanesManager);
-
-  // Register Activity Bar Sidebar View Provider
-  const sidebarProvider = new BuildtriSidebarProvider(context.extensionUri, stateManager);
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      BuildtriSidebarProvider.viewType,
-      sidebarProvider
-    )
-  );
 
   // Register Command: Open Buildtri Studio (Editor Webview Panel)
   context.subscriptions.push(
@@ -94,6 +112,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
           geminiClient
         );
       }
+    })
+  );
+
+  // Register Command: Focus AI Panel
+  context.subscriptions.push(
+    vscode.commands.registerCommand('buildtri.focusAiPanel', async () => {
+      await vscode.commands.executeCommand('buildtri.aiPanel.focus');
+    })
+  );
+
+  // Register Command: Draft File With AI
+  context.subscriptions.push(
+    vscode.commands.registerCommand('buildtri.draftWithAi', async (stageId: StageId, filePath: string) => {
+      if (aiProvider) {
+        await aiProvider.setDraftTarget(stageId, filePath, false);
+      }
+      await vscode.commands.executeCommand('buildtri.aiPanel.focus');
     })
   );
 

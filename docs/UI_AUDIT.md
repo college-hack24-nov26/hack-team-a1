@@ -203,3 +203,37 @@ All 6 message channels from extension host to webview are listened for and rende
   - Removed `#view-other` and `#other-stage-msg` from `ui-placeholder/index.html` and `ui-placeholder/main.js` during M8.
   - Removed outdated entries from `ui-placeholder/README.md` to ensure the element contract matches the live DOM.
 
+---
+
+## 5. Sidebar Stage Rail & Buildtri AI Secondary Panel Controls Audit
+
+### 5.1 Honesty Declarations
+1. **Lanes Declaration**: Lanes are declared by the user or by the Buildtri AI panel; Buildtri cannot detect code from other AI tools.
+2. **Deploy Confirmation**: Deploy: Buildtri records the confirmation unless config.deployCommand is set.
+3. **Real Operations Only**: Every control performs a real filesystem operation (creating real files on disk, opening files in real VS Code editor tabs, markdown preview) or a real network call to the Gemini API.
+
+### 5.2 Left Sidebar & Right AI Panel Controls Audit Table
+
+| Control / Element | Location | Message Sent / Trigger | Backend Handler | Real Action / File Mutated | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Stage Button (1-8) | Left Sidebar | `selectStage` | `src/sidebar.ts:50` | Selects stage and expands file drawer | **WORKS** |
+| Complete Stage Button | Left Sidebar | `runGate` | `src/sidebar.ts:60` | Evaluates gate rules, marks stage done/blocked | **WORKS** |
+| File Row Click / Open | Left Sidebar | `openFile` | `src/sidebar.ts:72` | Opens real file in VS Code editor tab | **WORKS** |
+| Preview Markdown Button | Left Sidebar | `previewFile` | `src/sidebar.ts:77` | Opens native VS Code markdown preview | **WORKS** |
+| Create from Template Button | Left Sidebar | `createFromTemplate` | `src/sidebar.ts:82` | Writes template to disk, opens editor tab | **WORKS** |
+| Draft with AI Button | Left Sidebar | `draftWithAi` | `src/sidebar.ts:87` | Focuses AI panel with preselected file target | **WORKS** |
+| Approve as Hybrid Button | Left Sidebar | `approveHybrid` | `src/sidebar.ts:92` | Marks file `hybrid, reviewed: true` in `provenance.json` | **WORKS** |
+| Deploy Checklist Checkbox | Left Sidebar | `toggleDeployCheck` | `src/sidebar.ts:98` | Persists checkbox state to `state.json` | **WORKS** |
+| Open Studio Button / Message | Left Sidebar | `openStudio` | `src/sidebar.ts:55` | Opens Buildtri Studio editor tab | **WORKS** |
+| Studio Title Bar Action Icon | Panel Header Title Menu | `buildtri.open` | `src/extension.ts:104` | Opens Buildtri Studio editor tab | **WORKS** |
+| Context Chip: Stage | AI Panel | `ai:updateContext` | `src/aipanel.ts:53` | Toggles stage context inclusion | **WORKS** |
+| Context Chip: Active File | AI Panel | `ai:updateContext` | `src/aipanel.ts:53` | Toggles target file context inclusion | **WORKS** |
+| Context Chip: Previous Docs | AI Panel | `ai:updateContext` | `src/aipanel.ts:53` | Toggles previous stage documents inclusion | **WORKS** |
+| Context Chip: Selection | AI Panel | `ai:updateContext` | `src/aipanel.ts:53` | Toggles editor selection inclusion | **WORKS** |
+| Set API Key Button | AI Panel | `ai:setApiKey` | `src/aipanel.ts:59` | Prompts input and stores key in SecretStorage | **WORKS** |
+| Clear API Key Button | AI Panel | `ai:clearApiKey` | `src/aipanel.ts:65` | Deletes key from SecretStorage | **WORKS** |
+| Draft Document Button | AI Panel | `ai:draft` | `src/aipanel.ts:71` | Scans secrets, queries Gemini, returns draft | **WORKS** |
+| Save as File Button | AI Panel | `ai:saveDraft` | `src/aipanel.ts:76` | Writes file to disk, tags `vibe` in provenance | **WORKS** |
+| Free Chat Send Button | AI Panel | `ai:chat` | `src/aipanel.ts:81` | Scans secrets, executes free chat with Gemini | **WORKS** |
+| Cancel AI Request Button | AI Panel | `ai:cancel` | `src/aipanel.ts:86` | Aborts active in-flight fetch request | **WORKS** |
+| Insert into Active File Button | AI Panel | `ai:insertActive` | `src/aipanel.ts:93` | Inserts extracted code into active editor tab | **WORKS** |

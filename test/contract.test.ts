@@ -103,3 +103,69 @@ test('Contract - UI audit documentation in docs/UI_AUDIT.md matches audited cont
   assert.ok(auditContent.includes('DEAD CODE'));
 });
 
+test('Contract - Honesty Rule: Sidebar and AI Panel controls map to verified handlers in code', () => {
+  const rootDir = process.cwd();
+  const auditPath = path.join(rootDir, 'docs', 'UI_AUDIT.md');
+  const sidebarPath = path.join(rootDir, 'src', 'sidebar.ts');
+  const aiPanelPath = path.join(rootDir, 'src', 'aipanel.ts');
+
+  assert.ok(fs.existsSync(auditPath), 'docs/UI_AUDIT.md must exist');
+  assert.ok(fs.existsSync(sidebarPath), 'src/sidebar.ts must exist');
+  assert.ok(fs.existsSync(aiPanelPath), 'src/aipanel.ts must exist');
+
+  const auditContent = fs.readFileSync(auditPath, 'utf8');
+  const sidebarContent = fs.readFileSync(sidebarPath, 'utf8');
+  const aiPanelContent = fs.readFileSync(aiPanelPath, 'utf8');
+
+  // Verify Honesty declarations
+  assert.ok(
+    auditContent.includes(
+      'Lanes are declared by the user or by the Buildtri AI panel; Buildtri cannot detect code from other AI tools.'
+    ),
+    'UI_AUDIT.md must declare lane detection honesty rule'
+  );
+  assert.ok(
+    auditContent.includes(
+      'Deploy: Buildtri records the confirmation unless config.deployCommand is set.'
+    ),
+    'UI_AUDIT.md must declare deploy confirmation honesty rule'
+  );
+
+  // Check that all sidebar messages have handlers in sidebar.ts
+  const sidebarMessages = [
+    'selectStage',
+    'openStudio',
+    'runGate',
+    'openFile',
+    'previewFile',
+    'createFromTemplate',
+    'draftWithAi',
+    'approveHybrid',
+    'toggleDeployCheck'
+  ];
+  for (const msg of sidebarMessages) {
+    assert.ok(
+      sidebarContent.includes(`case '${msg}':`),
+      `sidebar.ts must have a handler for message '${msg}'`
+    );
+  }
+
+  // Check that all AI panel messages have handlers in aipanel.ts
+  const aiMessages = [
+    'ai:updateContext',
+    'ai:setApiKey',
+    'ai:clearApiKey',
+    'ai:draft',
+    'ai:saveDraft',
+    'ai:chat',
+    'ai:cancel',
+    'ai:insertActive'
+  ];
+  for (const msg of aiMessages) {
+    assert.ok(
+      aiPanelContent.includes(`case '${msg}':`),
+      `aipanel.ts must have a handler for message '${msg}'`
+    );
+  }
+});
+

@@ -30,9 +30,12 @@ import {
   INITIAL_STATE,
   INITIAL_PROVENANCE,
   INITIAL_CONFIG,
-  DEFAULT_DEPLOY_CHECKLIST
+  DEFAULT_DEPLOY_CHECKLIST,
+  validateStageFilePath,
+  getStageFilesForStage
 } from '../src/constants';
-import { BuildtriState, BuildConfig, Provenance } from '../src/types';
+import { getTemplateForFile, normalizeContent, isTemplateContent } from '../src/templates';
+import { BuildtriState, BuildConfig, Provenance, StageFileContext } from '../src/types';
 
 // Helper to create a deep-cloned clean state for tests
 function getFreshState(): BuildtriState {
@@ -631,4 +634,161 @@ test('Compare - summarizeLanes, summarizeChanges, summarizeRuns, stageTimeline',
   assert.ok(composite.changes);
   assert.ok(composite.runs);
   assert.ok(composite.timeline);
+});
+
+// ============================================================================
+// 8. STAGE FILES, VALIDATION & TEMPLATES TESTS
+// ============================================================================
+test('Constants - validateStageFilePath security and relative path checks', () => {
+  // Valid relative paths
+  assert.strictEqual(validateStageFilePath('docs/USER_REQUIREMENT.md').valid, true);
+  assert.strictEqual(validateStageFilePath('docs/PRD.md').valid, true);
+  assert.strictEqual(validateStageFilePath('docs/sub/file.md').valid, true);
+  assert.strictEqual(validateStageFilePath('.buildtri/release-notes.md', 'release').valid, true);
+
+  // Invalid: empty
+  assert.strictEqual(validateStageFilePath('').valid, false);
+
+  // Invalid: absolute (Windows & Unix)
+  assert.strictEqual(validateStageFilePath('C:\\docs\\PRD.md').valid, false);
+  assert.strictEqual(validateStageFilePath('D:/docs/PRD.md').valid, false);
+  assert.strictEqual(validateStageFilePath('/etc/passwd').valid, false);
+  assert.strictEqual(validateStageFilePath('\\Windows\\System32').valid, false);
+
+  // Invalid: directory traversal ".."
+  assert.strictEqual(validateStageFilePath('../secret.txt').valid, false);
+  assert.strictEqual(validateStageFilePath('docs/../../secret.txt').valid, false);
+  assert.strictEqual(validateStageFilePath('docs/..').valid, false);
+
+  // Invalid: node_modules
+  assert.strictEqual(validateStageFilePath('node_modules/package/index.js').valid, false);
+
+  // Invalid: .buildtri (not release stage)
+  assert.strictEqual(validateStageFilePath('.buildtri/state.json', 'requirement').valid, false);
+  assert.strictEqual(validateStageFilePath('.buildtri/config.json', 'plan').valid, false);
+  assert.strictEqual(validateStageFilePath('.buildtri/release-notes.md', 'requirement').valid, false);
+});
+
+test('Constants - getStageFilesForStage resolves defaults and filters invalid', () => {
+  const config = getFreshConfig();
+
+  // Defaults
+  const reqFiles = getStageFilesForStage('requirement', config);
+  assert.deepStrictEqual(reqFiles.validFiles, ['docs/USER_REQUIREMENT.md']);
+  assert.strictEqual(reqFiles.invalidFiles.length, 0);
+
+  const planFiles = getStageFilesForStage('plan', config);
+  assert.deepStrictEqual(planFiles.validFiles, ['docs/PRD.md', 'docs/TRD.md']);
+
+  const deployFiles = getStageFilesForStage('deploy', config);
+  assert.deepStrictEqual(deployFiles.validFiles, []);
+
+  // Build files from provenance
+  const prov: Provenance = {
+    files: [
+      { path: 'src/app.ts', lane: 'hybrid', reviewed: true, reqIds: ['REQ-1'], updatedAt: '' },
+      { path: 'src/util.ts', lane: 'vibe', reviewed: false, reqIds: [], updatedAt: '' }
+    ]
+  };
+  const buildFiles = getStageFilesForStage('build', config, prov);
+  assert.deepStrictEqual(buildFiles.validFiles, ['src/app.ts', 'src/util.ts']);
+
+  // Config with invalid paths containing ".."
+  const badConfig: BuildConfig = {
+    ...config,
+    stageFiles: {
+      plan: ['docs/PRD.md', '../secret.md', 'node_modules/bad.md']
+    }
+  };
+  const filtered = getStageFilesForStage('plan', badConfig);
+  assert.deepStrictEqual(filtered.validFiles, ['docs/PRD.md']);
+  assert.strictEqual(filtered.invalidFiles.length, 2);
+  assert.ok(filtered.invalidFiles[0].path === '../secret.md');
+});
+
+test('Templates - getTemplateForFile, normalizeContent, and isTemplateContent', () => {
+  const state = getFreshState();
+  state.reqs = [
+    { id: 'REQ-1', title: 'User Auth', criteria: ['Sign in'], status: 'open' },
+    { id: 'REQ-2', title: 'Dashboard', criteria: ['View stats'], status: 'open' }
+  ];
+
+  const prdTemplate = getTemplateForFile('docs/PRD.md', state);
+  assert.ok(prdTemplate.includes('# Product Requirements Document (PRD)'));
+  assert.ok(prdTemplate.includes('- [ ] REQ-1: User Auth'));
+  assert.ok(prdTemplate.includes('- [ ] REQ-2: Dashboard'));
+
+  // normalizeContent
+  const raw = '   # Header \r\n\r\n Some text with spaces   \r\n ';
+  const normalized = normalizeContent(raw);
+  assert.strictEqual(normalized, '# Header\n\nSome text with spaces');
+
+  // isTemplateContent
+  assert.strictEqual(isTemplateContent(prdTemplate, prdTemplate), true);
+  assert.strictEqual(isTemplateContent(prdTemplate + '\r\n   ', prdTemplate), true);
+
+  const edited = prdTemplate + '\n\n## Custom Section\nReal content written by user.';
+  assert.strictEqual(isTemplateContent(edited, prdTemplate), false);
+});
+
+test('Gates - Stage files missing, template, and PRD tag reasons', () => {
+  const state: BuildtriState = {
+    ...getFreshState(),
+    reqs: [{ id: 'REQ-1', title: 'Auth', criteria: ['Login'], status: 'open' }],
+    tasks: [{ id: 'T-1', title: 'Task', reqIds: ['REQ-1'] }]
+  };
+  const config = getFreshConfig();
+
+  // 1. Missing file
+  const fileContextMissing: StageFileContext = {
+    files: {
+      'docs/USER_REQUIREMENT.md': { exists: false, empty: true, isTemplate: false }
+    }
+  };
+  const resMissing = computeGate('requirement', state, config, undefined, fileContextMissing);
+  assert.strictEqual(resMissing.ok, false);
+  assert.ok(resMissing.reasons.includes('docs/USER_REQUIREMENT.md is missing.'));
+
+  // 2. Template file
+  const fileContextTemplate: StageFileContext = {
+    files: {
+      'docs/USER_REQUIREMENT.md': { exists: true, empty: false, isTemplate: true, content: 'template' }
+    }
+  };
+  const resTemplate = computeGate('requirement', state, config, undefined, fileContextTemplate);
+  assert.strictEqual(resTemplate.ok, false);
+  assert.ok(resTemplate.reasons.includes('docs/USER_REQUIREMENT.md is still the template.'));
+
+  // 3. Filled requirement file passes
+  const fileContextFilledReq: StageFileContext = {
+    files: {
+      'docs/USER_REQUIREMENT.md': { exists: true, empty: false, isTemplate: false, content: 'User auth reqs' }
+    }
+  };
+  const resFilled = computeGate('requirement', state, config, undefined, fileContextFilledReq);
+  assert.strictEqual(resFilled.ok, true);
+
+  // 4. Plan: PRD.md does not mention REQ-1
+  const fileContextPlanNoTag: StageFileContext = {
+    files: {
+      'docs/PRD.md': { exists: true, empty: false, isTemplate: false, content: 'General product description without tag' },
+      'docs/TRD.md': { exists: true, empty: false, isTemplate: false, content: 'Technical architecture' }
+    },
+    prdReqTags: []
+  };
+  const resPlanNoTag = computeGate('plan', state, config, undefined, fileContextPlanNoTag);
+  assert.strictEqual(resPlanNoTag.ok, false);
+  assert.ok(resPlanNoTag.reasons.includes('PRD.md does not mention REQ-1.'));
+
+  // 5. Plan: PRD.md mentions REQ-1 -> passes!
+  const fileContextPlanWithTag: StageFileContext = {
+    files: {
+      'docs/PRD.md': { exists: true, empty: false, isTemplate: false, content: 'Product description covering REQ-1 in detail.' },
+      'docs/TRD.md': { exists: true, empty: false, isTemplate: false, content: 'Technical architecture' }
+    },
+    prdReqTags: ['REQ-1']
+  };
+  const resPlanWithTag = computeGate('plan', state, config, undefined, fileContextPlanWithTag);
+  assert.strictEqual(resPlanWithTag.ok, true);
+  assert.strictEqual(resPlanWithTag.reasons.length, 0);
 });

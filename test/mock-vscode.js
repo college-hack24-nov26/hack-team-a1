@@ -30,6 +30,13 @@ class MockEventEmitter {
   fire() {}
 }
 
+class MockRelativePattern {
+  constructor(base, pattern) {
+    this.base = base;
+    this.pattern = pattern;
+  }
+}
+
 module.exports = {
   window: {
     activeTextEditor: undefined,
@@ -39,7 +46,13 @@ module.exports = {
   },
   workspace: {
     isTrusted: true,
-    workspaceFolders: [{ uri: { fsPath: process.cwd() } }]
+    workspaceFolders: [{ uri: { fsPath: process.cwd() } }],
+    createFileSystemWatcher: () => ({
+      onDidChange: () => ({ dispose: () => {} }),
+      onDidCreate: () => ({ dispose: () => {} }),
+      onDidDelete: () => ({ dispose: () => {} }),
+      dispose: () => {}
+    })
   },
   languages: {
     createDiagnosticCollection: () => ({
@@ -51,6 +64,7 @@ module.exports = {
   commands: {
     registerCommand: () => ({ dispose: () => {} })
   },
+  RelativePattern: MockRelativePattern,
   Range: MockRange,
   Position: MockPosition,
   Diagnostic: MockDiagnostic,

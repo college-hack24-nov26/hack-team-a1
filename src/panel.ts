@@ -199,6 +199,11 @@ export class BuildtriStudioPanel {
     this.panel.webview.postMessage(message);
   }
 
+  public setSelectedStage(stageId: StageId): void {
+    this.selectedStage = stageId;
+    this.broadcastState();
+  }
+
   /**
    * Handles incoming messages from the Webview UI.
    */
