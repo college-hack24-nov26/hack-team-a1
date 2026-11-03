@@ -1,0 +1,159 @@
+/* Workspace Panel Stylesheet (Figma Export) */
+.figma-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  gap: 12px;
+  width: 1200px;
+  height: 816px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.figma-step-banner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 16px;
+  width: 1168px;
+  height: 68px;
+  background: #FFFFFF;
+  border: 1px solid #E1E4E9;
+  border-radius: 10px;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.figma-banner-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 2px;
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+
+.figma-banner-step {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: #12151B;
+}
+
+.figma-banner-why {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #4B5361;
+}
+
+.figma-test-workspace {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 12px;
+  width: 1168px;
+  height: 492px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 1;
+}
+
+.figma-scope-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 12px;
+  width: 200px;
+  height: 492px;
+  background: #FFFFFF;
+  border: 1px solid #E1E4E9;
+  border-radius: 10px;
+  flex: none;
+}
+
+.figma-results-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 664px;
+  height: 492px;
+  background: #FFFFFF;
+  border: 1px solid #E1E4E9;
+  border-radius: 10px;
+  flex: none;
+  overflow: hidden;
+}
+
+.figma-evidence-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 12px;
+  width: 280px;
+  height: 492px;
+  background: #FFFFFF;
+  border: 1px solid #E1E4E9;
+  border-radius: 10px;
+  flex: none;
+  overflow-y: auto;
+}
+
+.figma-terminal-box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 16px;
+  gap: 4px;
+  width: 1168px;
+  height: 140px;
+  background: #12151B;
+  border: 1px solid #323945;
+  border-radius: 10px;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+  overflow: hidden;
+}
+
+.figma-playback-bar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 12px;
+  gap: 8px;
+  width: 1168px;
+  height: 48px;
+  background: #FFFFFF;
+  border: 1px solid #E1E4E9;
+  border-radius: 10px;
+  flex: none;
+  order: 3;
+  align-self: stretch;
+  flex-grow: 0;
+}

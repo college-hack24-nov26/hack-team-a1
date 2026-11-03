@@ -1,0 +1,47 @@
+<!-- BUILD TRI - Three Ways / Lane Comparison Cards (Figma Precision) -->
+<section class="figma-three-ways-section">
+  <div class="figma-h1" style="font-size:28px; font-weight:600; color:#12151B; margin-bottom:16px;">
+    Three ways to build software
+  </div>
+
+  <div class="figma-cards-row">
+    <!-- Way Card: Real -->
+    <div class="figma-card-box" id="cardLaneReal" style="cursor:pointer;" onclick="setFigmaLane('real')">
+      <div class="figma-status-pill pass" style="width:fit-content;">
+        <span class="pill-label">REAL</span>
+      </div>
+      <div style="font-family:'Inter'; font-size:14px; color:#12151B; font-weight:500;">Deterministic assertion proof</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">100% human-verified architecture with zero mock assumptions</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#166A3A; font-weight:500;">✓ Strict contracts passed</div>
+      <div style="margin-top:auto;">
+        <button class="figma-btn-primary" style="width:100%; font-size:13px; height:32px;">Active Track</button>
+      </div>
+    </div>
+
+    <!-- Way Card: Vibe -->
+    <div class="figma-card-box" id="cardLaneVibe" style="cursor:pointer;" onclick="setFigmaLane('vibe')">
+      <div class="figma-status-pill blocker" style="width:fit-content;">
+        <span class="pill-label">VIBE</span>
+      </div>
+      <div style="font-family:'Inter'; font-size:14px; color:#12151B; font-weight:500;">Prompt-only prototype flow</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Autonomous generation without contractual regression locks</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#A02A25; font-weight:500;">⚠ High drift risk</div>
+      <div style="margin-top:auto;">
+        <button class="figma-btn-secondary" style="width:100%; font-size:13px; height:32px;">Switch Track</button>
+      </div>
+    </div>
+
+    <!-- Way Card: Hybrid -->
+    <div class="figma-card-box" id="cardLaneHybrid" style="cursor:pointer;" onclick="setFigmaLane('hybrid')">
+      <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB; width:fit-content;">
+        <span class="pill-label" style="color:#2358BB; font-weight:500; font-size:11px; text-transform:uppercase;">HYBRID</span>
+      </div>
+      <div style="font-family:'Inter'; font-size:14px; color:#12151B; font-weight:500;">AI-assisted architecture</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Human architect reviews every AST diff before merge to disk</div>
+      <div style="font-family:'Inter'; font-size:14px; color:#2358BB; font-weight:500;">⚡ Optimal speed & proof</div>
+      <div style="margin-top:auto;">
+        <button class="figma-btn-secondary" style="width:100%; font-size:13px; height:32px;">Switch Track</button>
+      </div>
+    </div>
+  </div>
+</section>

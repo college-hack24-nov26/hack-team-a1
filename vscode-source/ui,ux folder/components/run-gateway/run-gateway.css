@@ -1,0 +1,139 @@
+/* Run Gateway Component Styling */
+.run-gateway-section {
+	background: var(--bg-card);
+	border: 1px solid var(--border-glow);
+	border-radius: var(--radius-lg);
+	padding: 24px;
+	margin-bottom: 32px;
+	box-shadow: var(--shadow-card);
+}
+
+.gateway-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.gateway-title {
+	font-size: 18px;
+	font-weight: 800;
+}
+
+.tool-cards-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 14px;
+	margin-bottom: 20px;
+}
+
+.tool-card {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-glow);
+	border-radius: var(--radius-md);
+	padding: 16px;
+	transition: all 0.2s ease;
+}
+
+.tool-card:hover {
+	transform: translateY(-2px);
+	border-color: rgba(0, 229, 255, 0.4);
+}
+
+.tool-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.tool-icon {
+	font-size: 18px;
+}
+
+.tool-pill {
+	font-size: 10px;
+	font-weight: 800;
+	padding: 2px 7px;
+	border-radius: var(--radius-sm);
+	letter-spacing: 0.5px;
+}
+
+.pill-pass {
+	background: rgba(0, 230, 118, 0.15);
+	color: var(--color-success);
+	border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.tool-name {
+	font-size: 14px;
+	font-weight: 800;
+	margin-bottom: 4px;
+}
+
+.tool-metric {
+	font-size: 12.5px;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-bottom: 2px;
+}
+
+.tool-sub {
+	font-size: 11px;
+	color: var(--text-muted);
+}
+
+/* Terminal Console */
+.terminal-container {
+	background: #040812;
+	border: 1px solid var(--border-glow);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+}
+
+.terminal-bar {
+	background: #091326;
+	padding: 8px 14px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--border-glow);
+	font-size: 11px;
+	color: var(--text-muted);
+}
+
+.terminal-dots {
+	display: flex;
+	gap: 6px;
+}
+
+.dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+}
+
+.dot-red { background: #FF5F56; }
+.dot-yellow { background: #FFBD2E; }
+.dot-green { background: #27C93F; }
+
+.terminal-title {
+	font-family: var(--font-mono);
+}
+
+.terminal-timing {
+	color: var(--cyan-glow);
+	font-weight: 700;
+}
+
+.terminal-body {
+	padding: 16px;
+	font-family: var(--font-mono);
+	font-size: 11.5px;
+	line-height: 1.6;
+	overflow-x: auto;
+}
+
+.t-green { color: var(--color-success); font-weight: 700; }
+.t-cyan { color: var(--cyan-glow); font-weight: 700; }
+.t-yellow { color: var(--color-warning); font-weight: 700; }

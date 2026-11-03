@@ -1,0 +1,105 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.chat-working-logo {
+	display: inline-block;
+	position: relative;
+	width: var(--vscode-codiconFontSize);
+	height: var(--vscode-codiconFontSize);
+	flex-shrink: 0;
+	vertical-align: middle;
+	pointer-events: none;
+	contain: layout style;
+}
+
+.chat-working-logo.chat-working-logo-compact {
+	width: var(--vscode-codiconFontSize-compact);
+	height: var(--vscode-codiconFontSize-compact);
+}
+
+.chat-working-logo-monochrome {
+	filter: grayscale(1);
+}
+
+.hc-black .chat-working-logo-monochrome,
+.hc-light .chat-working-logo-monochrome {
+	filter: none;
+}
+
+.chat-working-logo-no-icon {
+	/* Preserve the text gutter shared with thinking and tool rows. */
+	visibility: hidden;
+}
+
+.chat-working-logo > .chat-working-logo-face {
+	position: absolute;
+	inset: 0;
+	transform: none;
+	opacity: 1;
+	display: block !important;
+	background: url('../../../../../browser/media/code-icon.svg') center / contain no-repeat !important;
+}
+
+.chat-working-logo-face > svg {
+	display: none !important;
+}
+
+.chat-working-logo-draw-container {
+	display: none !important;
+}
+
+.chat-working-logo-draw > .chat-working-logo-face {
+	display: block !important;
+}
+
+.chat-working-logo-draw > .chat-working-logo-draw-container {
+	display: none !important;
+}
+
+.chat-working-logo-draw.chat-working-logo-draw-assembled > .chat-working-logo-face {
+	display: block !important;
+}
+
+.chat-working-logo-draw.chat-working-logo-draw-assembled > .chat-working-logo-draw-container {
+	display: none !important;
+}
+
+.chat-working-logo-atlas > .chat-working-logo-face {
+	display: block !important;
+}
+
+.chat-working-logo-atlas > .chat-working-logo-draw-container {
+	display: none !important;
+}
+
+.chat-working-logo-atlas-viewport {
+	display: none !important;
+}
+
+.chat-working-logo-atlas-sheet {
+	display: none !important;
+}
+
+@keyframes chat-working-logo-breathe {
+	0% {
+		transform: scale(0.92);
+		opacity: 0.85;
+		filter: drop-shadow(0 0 0px rgba(0, 122, 204, 0));
+	}
+	50% {
+		transform: scale(1.08);
+		opacity: 1;
+		filter: drop-shadow(0 0 3px rgba(0, 122, 204, 0.6));
+	}
+	100% {
+		transform: scale(0.92);
+		opacity: 0.85;
+		filter: drop-shadow(0 0 0px rgba(0, 122, 204, 0));
+	}
+}
+
+.chat-working-logo.chat-working-logo-active {
+	animation: chat-working-logo-breathe 1.8s ease-in-out infinite;
+}

@@ -1,0 +1,50 @@
+<!-- BUILD TRI - Top Navigation Header Component (Figma Precision: 1440x56px) -->
+<header class="figma-top-bar" id="appTopBar">
+  <!-- Brand Group -->
+  <div class="figma-logo-mark">
+    <span class="figma-monogram">B</span>
+  </div>
+  <div class="figma-wordmark">BUILD TRI</div>
+  
+  <div class="figma-top-separator">/</div>
+  <div class="figma-top-project" id="topProjectName">CloudSecure API</div>
+  <div class="figma-top-separator">/</div>
+  <div class="figma-top-current-stage" id="topStageName">05 Test · Real</div>
+
+  <div class="figma-flexible-space"></div>
+
+  <!-- Screen Navigation Selector for Testing & Demos -->
+  <div class="figma-screen-nav">
+    <button class="figma-screen-nav-btn active" onclick="switchFigmaScreen('test')">08 Test</button>
+    <button class="figma-screen-nav-btn" onclick="switchFigmaScreen('security')">07 Security</button>
+    <button class="figma-screen-nav-btn" onclick="switchFigmaScreen('workspace')">03 Workspace</button>
+    <button class="figma-screen-nav-btn" onclick="switchFigmaScreen('setup')">02 Setup</button>
+    <button class="figma-screen-nav-btn" onclick="switchFigmaScreen('home')">01 Home</button>
+  </div>
+
+  <!-- Version Switch (Real / Vibe / Hybrid) -->
+  <div class="figma-version-switch" id="topVersionSwitch">
+    <div class="figma-version-track active" data-lane="real" onclick="setFigmaLane('real')">
+      <span class="track-label">Real</span>
+    </div>
+    <div class="figma-version-track" data-lane="vibe" onclick="setFigmaLane('vibe')">
+      <span class="track-label">Vibe</span>
+    </div>
+    <div class="figma-version-track" data-lane="hybrid" onclick="setFigmaLane('hybrid')">
+      <span class="track-label">Hybrid</span>
+    </div>
+  </div>
+
+  <!-- Product Type Toggle (API / Web) -->
+  <div class="figma-product-type" id="topProductType">
+    <div class="figma-segment active" data-type="api" onclick="setFigmaProductType('api')">
+      <span class="segment-label">API</span>
+    </div>
+    <div class="figma-segment" data-type="web" onclick="setFigmaProductType('web')">
+      <span class="segment-label">Fullstack</span>
+    </div>
+  </div>
+
+  <!-- Help Button -->
+  <button class="figma-help-btn" onclick="showHelpModal()">Help</button>
+</header>

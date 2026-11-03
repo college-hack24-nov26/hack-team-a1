@@ -1,0 +1,83 @@
+<!-- Sidebar Workflow Stages & Step Navigation Component (Figma Export) -->
+<aside class="figma-sidebar" id="appSidebar">
+  <!-- Section Label -->
+  <div class="figma-sidebar-label">STAGES</div>
+
+  <!-- Stage 01: Spec -->
+  <div class="figma-stage-item" data-stage="01" onclick="selectFigmaStage('01', 'Spec')">
+    <div class="stage-main">
+      <span class="stage-index">01</span>
+      <span class="stage-label">Spec</span>
+    </div>
+  </div>
+
+  <!-- Stage 02: Design -->
+  <div class="figma-stage-item" data-stage="02" onclick="selectFigmaStage('02', 'Design')">
+    <div class="stage-main">
+      <span class="stage-index">02</span>
+      <span class="stage-label">Design</span>
+    </div>
+  </div>
+
+  <!-- Stage 03: Scaffold -->
+  <div class="figma-stage-item" data-stage="03" onclick="selectFigmaStage('03', 'Scaffold')">
+    <div class="stage-main">
+      <span class="stage-index">03</span>
+      <span class="stage-label">Scaffold</span>
+    </div>
+  </div>
+
+  <!-- Stage 04: Security -->
+  <div class="figma-stage-item" data-stage="04" onclick="selectFigmaStage('04', 'Security')">
+    <div class="stage-main">
+      <span class="stage-index">04</span>
+      <span class="stage-label">Security</span>
+    </div>
+  </div>
+
+  <!-- Stage 05: Test (Default active on Screen 08) -->
+  <div class="figma-stage-item active" data-stage="05" onclick="selectFigmaStage('05', 'Test')">
+    <div class="stage-main">
+      <span class="stage-index">05</span>
+      <span class="stage-label">Test</span>
+    </div>
+  </div>
+
+  <!-- Stage 06: Deploy -->
+  <div class="figma-stage-item" data-stage="06" onclick="selectFigmaStage('06', 'Deploy')">
+    <div class="stage-main">
+      <span class="stage-index">06</span>
+      <span class="stage-label">Deploy</span>
+    </div>
+  </div>
+
+  <div class="figma-sidebar-spacer"></div>
+
+  <!-- Outputs Section -->
+  <div class="figma-sidebar-label">OUTPUTS</div>
+
+  <!-- Output 01 -->
+  <div class="figma-stage-item" data-output="01" onclick="selectFigmaOutput('01', 'Documentation')">
+    <div class="stage-main">
+      <span class="stage-index">01</span>
+      <span class="stage-label">Documentation</span>
+    </div>
+  </div>
+
+  <!-- Output 02 -->
+  <div class="figma-stage-item" data-output="02" onclick="selectFigmaOutput('02', 'Audit Log')">
+    <div class="stage-main">
+      <span class="stage-index">02</span>
+      <span class="stage-label">Audit Log</span>
+    </div>
+  </div>
+
+  <!-- Output 03 (Locked) -->
+  <div class="figma-stage-item" data-output="03" style="opacity:0.75;">
+    <div class="stage-main">
+      <span class="stage-index" style="color:#9AA2AF;">03</span>
+      <span class="stage-label" style="color:#6B7482;">Binary Package</span>
+    </div>
+    <span class="figma-lock-icon">🔒</span>
+  </div>
+</aside>

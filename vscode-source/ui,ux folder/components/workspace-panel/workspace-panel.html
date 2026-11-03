@@ -1,0 +1,220 @@
+<!-- Workspace Panel Component (Figma Screen 08: Test · Real) -->
+<div class="figma-main" id="workspaceMainPanel">
+  <!-- Step Banner -->
+  <div class="figma-step-banner">
+    <div class="figma-banner-text">
+      <div class="figma-banner-step" id="bannerStepTitle">Step 5 of 6: Run Real Automated Test Suite</div>
+      <div class="figma-banner-why" id="bannerStepWhy">Validates deterministic assertion proof against generated contract with zero mocking</div>
+    </div>
+    <div class="figma-status-pill pass" id="bannerStatusPill">
+      <span class="pill-label">ALL 6 SUITES PASSED</span>
+    </div>
+    <button class="figma-btn-primary" id="btnNextStep" onclick="handleNextStep()">Next step</button>
+  </div>
+
+  <!-- Test Workspace: 3 Columns -->
+  <div class="figma-test-workspace">
+    <!-- Col 1: Test Scope (200px) -->
+    <div class="figma-scope-card">
+      <div class="figma-card-label">TEST SCOPE</div>
+      
+      <div class="figma-project-context">
+        <div class="figma-project-name">CloudSecure API</div>
+        <div class="figma-project-platform">Node.js 20 · Vitest</div>
+      </div>
+
+      <div class="figma-suite-filters">
+        <div class="figma-suite-filter active" onclick="filterSuites('all', this)">
+          <span class="filter-label">All</span>
+          <span class="filter-count">24</span>
+        </div>
+        <div class="figma-suite-filter" onclick="filterSuites('unit', this)">
+          <span class="filter-label">Unit</span>
+          <span class="filter-count">12</span>
+        </div>
+        <div class="figma-suite-filter" onclick="filterSuites('integration', this)">
+          <span class="filter-label">Integration</span>
+          <span class="filter-count">8</span>
+        </div>
+        <div class="figma-suite-filter" onclick="filterSuites('e2e', this)">
+          <span class="filter-label">E2E Smoke</span>
+          <span class="filter-count">4</span>
+        </div>
+      </div>
+
+      <div class="figma-run-env">
+        <div class="figma-card-label">RUN ENVIRONMENT</div>
+        <div class="figma-env-device">Docker Container · Ephemeral SQLite · Vitest v2.0</div>
+      </div>
+
+      <div class="figma-security-handoff">
+        <div class="figma-card-label">SECURITY HANDOFF</div>
+        <div class="handoff-summary">6/6 Cleared</div>
+        <div class="handoff-advisory">0 blocker findings passed into test execution</div>
+      </div>
+    </div>
+
+    <!-- Col 2: Test Results Matrix (664px) -->
+    <div class="figma-results-card">
+      <div class="figma-results-heading">
+        <div class="figma-title-group">
+          <div class="figma-h2">Test Execution Matrix</div>
+          <div class="figma-sub-desc">Deterministic test results with strict assertion proof</div>
+        </div>
+        <button class="figma-btn-secondary" id="btnRunTests" onclick="runFigmaTests()">Run tests</button>
+      </div>
+
+      <!-- Run Summary Bar -->
+      <div class="figma-run-summary-bar">
+        <span class="figma-summary-passed" id="summaryPassed">24 Passed</span>
+        <span class="figma-summary-failed" id="summaryFailed">0 Failed</span>
+        <span class="figma-summary-skipped" id="summarySkipped">0 Skipped</span>
+        <span class="figma-summary-duration" id="summaryDuration">1.42s Total</span>
+      </div>
+
+      <!-- Suite Item Rows -->
+      <div class="figma-suite-list" id="suiteListContainer">
+        <!-- Row 1 -->
+        <div class="figma-suite-row" onclick="selectSuiteRow(1, 'jwt.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">auth/jwt.test.ts</div>
+            <div class="figma-suite-desc">JWT token minting, claim verification, signature validation</div>
+          </div>
+          <div class="figma-suite-duration">142ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+
+        <!-- Row 2 (Active highlighted) -->
+        <div class="figma-suite-row active" onclick="selectSuiteRow(2, 'guard.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">auth/guard.test.ts</div>
+            <div class="figma-suite-desc">RBAC role enforcement, tenant boundary access protection</div>
+          </div>
+          <div class="figma-suite-duration">188ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="figma-suite-row" onclick="selectSuiteRow(3, 'billing.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">billing/stripe-webhook.test.ts</div>
+            <div class="figma-suite-desc">Webhook idempotency, subscription status change events</div>
+          </div>
+          <div class="figma-suite-duration">246ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="figma-suite-row" onclick="selectSuiteRow(4, 'database.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">db/migration.test.ts</div>
+            <div class="figma-suite-desc">Foreign key cascade rules, schema rollback validation</div>
+          </div>
+          <div class="figma-suite-duration">312ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+
+        <!-- Row 5 -->
+        <div class="figma-suite-row" onclick="selectSuiteRow(5, 'rate-limit.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">middleware/rate-limit.test.ts</div>
+            <div class="figma-suite-desc">Token bucket algorithm, 429 Retry-After header assertions</div>
+          </div>
+          <div class="figma-suite-duration">195ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+
+        <!-- Row 6 -->
+        <div class="figma-suite-row" onclick="selectSuiteRow(6, 'audit.test.ts')">
+          <div class="figma-circle-check"></div>
+          <div class="figma-suite-info">
+            <div class="figma-suite-title">security/audit-log.test.ts</div>
+            <div class="figma-suite-desc">Immutable append-only hash chains, audit trail integrity</div>
+          </div>
+          <div class="figma-suite-duration">337ms</div>
+          <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+        </div>
+      </div>
+
+      <div class="figma-results-note">Live results synchronized from Vitest reporter socket</div>
+    </div>
+
+    <!-- Col 3: Test Evidence (280px) -->
+    <div class="figma-evidence-card">
+      <div class="figma-card-label">TEST EVIDENCE</div>
+      
+      <div class="figma-test-title-bar">
+        <div class="figma-h3" id="evidenceTitle">guard.test.ts</div>
+        <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+      </div>
+
+      <div class="figma-explanation" id="evidenceDesc">
+        Validates JWT signature, claims, and role permissions on protected endpoint
+      </div>
+
+      <!-- Assertion Code Box -->
+      <div class="figma-code-box">
+        <div class="figma-code-file" id="evidenceFile">src/auth/guard.test.ts:42</div>
+        <pre class="figma-code-snippet" id="evidenceSnippet"><code>expect(res.status).toBe(200);
+expect(payload.role).toBe('admin');
+expect(res.header['x-jwt']).toBeDefined();</code></pre>
+      </div>
+
+      <!-- Assertion Result -->
+      <div class="figma-assertion-result">
+        <div class="figma-card-label">ASSERTION RESULT</div>
+        <div class="figma-assertion-values">
+          <span class="figma-assertion-expected" id="evidenceExpected">expected: 200</span>
+          <span class="figma-assertion-match" id="evidenceMatch">MATCH</span>
+        </div>
+        <div class="figma-assertion-units">Delta: 0ms · Strict equality</div>
+      </div>
+
+      <!-- Evidence Note -->
+      <div class="figma-evidence-note">
+        <div class="note-title">Deterministic Proof</div>
+        <div class="note-desc">Test executed against isolated ephemeral SQLite instance. Determinism score: 100%.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terminal Execution Log -->
+  <div class="figma-terminal-box">
+    <div class="figma-terminal-heading">
+      <span class="label">TERMINAL EXECUTION LOG</span>
+      <span class="source">vitest --run --reporter=json</span>
+    </div>
+    <div class="figma-terminal-cmd">$ npm run test:unit</div>
+    <div class="figma-terminal-output">✓ src/auth/jwt.test.ts (6 tests) 142ms</div>
+    <div class="figma-terminal-cmd">$ npm run test:integration -- --coverage</div>
+    <div class="figma-terminal-output" id="terminalSummaryLine">Test Files: 6 passed (6) | Tests: 24 passed (24) | Duration: 1.42s | Coverage: 98.4%</div>
+  </div>
+
+  <!-- Playback Controls Bar -->
+  <div class="figma-playback-bar">
+    <button class="figma-control-btn" title="Restart Playback" onclick="restartPlayback()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+    </button>
+    <button class="figma-control-btn active-play" id="btnPlayPause" title="Pause / Resume" onclick="togglePlayPause()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+    <button class="figma-control-btn" title="Step Forward" onclick="stepForward()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+    </button>
+    
+    <div class="figma-playback-time" id="playbackTimeDisplay">00:01:42</div>
+    
+    <div class="figma-timeline-track" onclick="seekTimeline(event)">
+      <div class="figma-timeline-progress" id="timelineProgress" style="width: 100%;"></div>
+    </div>
+
+    <button class="figma-speed-pill active" onclick="setSpeed(1, this)">1x</button>
+    <button class="figma-speed-pill" onclick="setSpeed(2, this)">2x</button>
+    <button class="figma-speed-pill" onclick="setSpeed(4, this)">4x</button>
+  </div>
+</div>

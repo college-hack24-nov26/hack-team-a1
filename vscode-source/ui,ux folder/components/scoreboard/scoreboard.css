@@ -1,0 +1,108 @@
+/* Scoreboard Component Styling */
+.scoreboard-section {
+	margin-bottom: 40px;
+}
+
+.scoreboard-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	margin-bottom: 22px;
+}
+
+.scoreboard-title {
+	font-size: 24px;
+	font-weight: 800;
+	margin-bottom: 4px;
+}
+
+.scoreboard-sub {
+	font-size: 13px;
+	color: var(--text-muted);
+	max-width: 720px;
+}
+
+.matrix-table-card {
+	background: var(--bg-card);
+	border: 1px solid var(--border-glow);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-card);
+}
+
+.benchmark-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.benchmark-table th {
+	background: #0A152A;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border-glow);
+	font-size: 11px;
+	letter-spacing: 0.8px;
+}
+
+.th-lane-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.th-manual { color: var(--lane-manual); }
+.th-hybrid { color: var(--cyan-glow); background: rgba(0, 229, 255, 0.04); }
+.th-vibe { color: var(--lane-vibe); }
+
+.th-badge {
+	font-size: 10px;
+	padding: 2px 7px;
+	border-radius: var(--radius-sm);
+}
+
+.benchmark-table td {
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border-subtle);
+	font-size: 13px;
+}
+
+.benchmark-table tr:hover td {
+	background: rgba(0, 229, 255, 0.02);
+}
+
+.td-dimension {
+	width: 32%;
+}
+
+.dim-name {
+	display: block;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-bottom: 2px;
+}
+
+.dim-desc {
+	display: block;
+	font-size: 11px;
+	color: var(--text-muted);
+}
+
+.td-val {
+	font-family: var(--font-mono);
+	font-size: 12.5px;
+	color: var(--text-secondary);
+}
+
+.font-bold { font-weight: 800; }
+.text-cyan { color: var(--cyan-glow); }
+.text-vibe { color: #E040FB; }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-danger { color: var(--color-danger); }
+
+.tr-highlight {
+	background: rgba(0, 229, 255, 0.06);
+	border-top: 2px solid var(--cyan-glow);
+}

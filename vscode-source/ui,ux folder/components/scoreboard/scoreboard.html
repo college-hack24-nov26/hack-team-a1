@@ -1,0 +1,96 @@
+<!-- BUILD TRI - 3-Lane Executive Benchmark Scoreboard Component (Figma Precision) -->
+<section class="figma-results-card" style="width:100%; height:auto; padding:24px; gap:20px;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <div class="figma-status-pill pass" style="width:fit-content; margin-bottom:4px;">
+        <span class="pill-label">EXECUTIVE BENCHMARK SCOREBOARD</span>
+      </div>
+      <div class="figma-h2">3-Lane Side-by-Side Comparison Matrix</div>
+      <div class="figma-sub-desc">
+        Real-world performance metrics captured during the construction of the exact same SaaS across all three isolated worktrees.
+      </div>
+    </div>
+    <button class="figma-btn-secondary" onclick="alert('Exporting metrics as JSON...')">
+      📥 Export JSON
+    </button>
+  </div>
+
+  <div style="overflow-x:auto; width:100%;">
+    <table style="width:100%; border-collapse:collapse; font-family:'Inter', sans-serif;">
+      <thead>
+        <tr style="border-bottom:2px solid #E1E4E9; text-align:left;">
+          <th style="padding:12px; font-size:12px; font-weight:600; color:#6B7482; text-transform:uppercase;">BENCHMARK DIMENSION</th>
+          <th style="padding:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13px; font-weight:600; color:#12151B;">REAL CODE</span>
+              <div class="figma-status-pill pass"><span class="pill-label">100% HUMAN</span></div>
+            </div>
+          </th>
+          <th style="padding:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13px; font-weight:600; color:#12151B;">HYBRID CODE</span>
+              <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB;"><span class="pill-label" style="color:#2358BB; font-weight:500; font-size:11px;">AI-ASSISTED</span></div>
+            </div>
+          </th>
+          <th style="padding:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13px; font-weight:600; color:#12151B;">VIBE CODE</span>
+              <div class="figma-status-pill blocker"><span class="pill-label">AUTONOMOUS</span></div>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #E1E4E9;">
+          <td style="padding:12px; font-size:13px; color:#12151B; font-weight:500;">
+            Development Time
+            <div style="font-size:11px; color:#6B7482;">Active authoring across all stages</div>
+          </td>
+          <td style="padding:12px; font-size:13px; color:#4B5361;">4h 30m</td>
+          <td style="padding:12px; font-size:13px; color:#2358BB; font-weight:600;">2h 10m (2.1x faster)</td>
+          <td style="padding:12px; font-size:13px; color:#A02A25; font-weight:600;">45m (6x faster)</td>
+        </tr>
+
+        <tr style="border-bottom:1px solid #E1E4E9;">
+          <td style="padding:12px; font-size:13px; color:#12151B; font-weight:500;">
+            Origin: Typed vs AI Ratio
+            <div style="font-size:11px; color:#6B7482;">Keystroke logging vs WorkspaceEdit AI</div>
+          </td>
+          <td style="padding:12px; font-size:13px; color:#4B5361;">95% Typed / 0% AI</td>
+          <td style="padding:12px; font-size:13px; color:#2358BB; font-weight:600;">35% Typed / 65% AI</td>
+          <td style="padding:12px; font-size:13px; color:#4B5361;">4% Typed / 96% AI</td>
+        </tr>
+
+        <tr style="border-bottom:1px solid #E1E4E9;">
+          <td style="padding:12px; font-size:13px; color:#12151B; font-weight:500;">
+            Test Pass Rate
+            <div style="font-size:11px; color:#6B7482;">Vitest unit & Playwright E2E suites</div>
+          </td>
+          <td style="padding:12px; font-size:13px; color:#166A3A; font-weight:500;">24 / 24 (100%)</td>
+          <td style="padding:12px; font-size:13px; color:#166A3A; font-weight:600;">23 / 24 (96%)</td>
+          <td style="padding:12px; font-size:13px; color:#A02A25; font-weight:500;">14 / 24 (58%)</td>
+        </tr>
+
+        <tr style="border-bottom:1px solid #E1E4E9;">
+          <td style="padding:12px; font-size:13px; color:#12151B; font-weight:500;">
+            Security Audit & SAST
+            <div style="font-size:11px; color:#6B7482;">Semgrep OWASP Top 10 rule matches</div>
+          </td>
+          <td style="padding:12px; font-size:13px; color:#166A3A; font-weight:500;">0 Blockers / Clean</td>
+          <td style="padding:12px; font-size:13px; color:#166A3A; font-weight:600;">0 Blockers / Clean</td>
+          <td style="padding:12px; font-size:13px; color:#A02A25; font-weight:500;">4 Blockers / 1 CVE</td>
+        </tr>
+
+        <tr style="background:#EAF1FD; font-weight:600;">
+          <td style="padding:14px 12px; font-size:14px; color:#12151B;">
+            Overall Quality Score
+            <div style="font-size:11px; color:#6B7482; font-weight:normal;">Composite deterministic index</div>
+          </td>
+          <td style="padding:14px 12px; font-size:14px; color:#12151B;">98.4 / 100</td>
+          <td style="padding:14px 12px; font-size:16px; color:#2358BB;">95.8 / 100 ⚡</td>
+          <td style="padding:14px 12px; font-size:14px; color:#A02A25;">62.0 / 100</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

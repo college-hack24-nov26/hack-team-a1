@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUILD TRI IDE - Figma UI/UX System (BuildLab 2K26)</title>
+  <link rel="stylesheet" href="design-system.css">
+  <style>
+    /* Viewport Frame wrapper for presentation */
+    body {
+      background: #E5E8EC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    .demo-bar {
+      width: 1440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 4px;
+      font-family: var(--font-inter);
+      font-size: 13px;
+      color: #6B7482;
+    }
+
+    .demo-title {
+      font-weight: 600;
+      color: #12151B;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .demo-tag {
+      background: #EAF1FD;
+      color: #2358BB;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid #D3E3FB;
+    }
+
+    .screen-view {
+      display: none;
+      width: 100%;
+    }
+
+    .screen-view.active {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Presentation Header -->
+  <div class="demo-bar">
+    <div class="demo-title">
+      <span>BUILD TRI IDE · Figma Spec Implementation</span>
+      <span class="demo-tag">Node 9-404 · 1440x900 Exact Match</span>
+    </div>
+    <div>Use Top Bar tabs to preview all 5 Figma screens: Test, Security, Workspace, Setup, Home</div>
+  </div>
+
+  <!-- Main 1440px Canvas Container -->
+  <div class="figma-app-frame" id="appFrame">
+    
+    <!-- Top Bar (Shared Navigation Across IDE Screens) -->
+    <header class="figma-top-bar" id="appTopBar">
+      <div class="figma-logo-mark">
+        <span class="figma-monogram">B</span>
+      </div>
+      <div class="figma-wordmark">BUILD TRI</div>
+      
+      <div class="figma-top-separator">/</div>
+      <div class="figma-top-project" id="topProjectName">CloudSecure API</div>
+      <div class="figma-top-separator">/</div>
+      <div class="figma-top-current-stage" id="topStageName">05 Test · Real</div>
+
+      <div class="figma-flexible-space"></div>
+
+      <!-- Figma Screen Switcher Tabs -->
+      <div class="figma-screen-nav">
+        <button class="figma-screen-nav-btn active" id="tabTest" onclick="switchScreen('screenTest', this)">08 Test</button>
+        <button class="figma-screen-nav-btn" id="tabSecurity" onclick="switchScreen('screenSecurity', this)">07 Security</button>
+        <button class="figma-screen-nav-btn" id="tabWorkspace" onclick="switchScreen('screenWorkspace', this)">03 Workspace</button>
+        <button class="figma-screen-nav-btn" id="tabSetup" onclick="switchScreen('screenSetup', this)">02 Setup</button>
+        <button class="figma-screen-nav-btn" id="tabHome" onclick="switchScreen('screenHome', this)">01 Home</button>
+      </div>
+
+      <!-- Version Switch (Real / Vibe / Hybrid) -->
+      <div class="figma-version-switch" id="topVersionSwitch">
+        <div class="figma-version-track active" data-lane="real" onclick="setLane('real')">
+          <span class="track-label">Real</span>
+        </div>
+        <div class="figma-version-track" data-lane="vibe" onclick="setLane('vibe')">
+          <span class="track-label">Vibe</span>
+        </div>
+        <div class="figma-version-track" data-lane="hybrid" onclick="setLane('hybrid')">
+          <span class="track-label">Hybrid</span>
+        </div>
+      </div>
+
+      <!-- Product Type Segment Toggle -->
+      <div class="figma-product-type" id="topProductType">
+        <div class="figma-segment active" data-type="api" onclick="setProductType('api')">
+          <span class="segment-label">API</span>
+        </div>
+        <div class="figma-segment" data-type="web" onclick="setProductType('web')">
+          <span class="segment-label">Fullstack</span>
+        </div>
+      </div>
+
+      <!-- Help Button -->
+      <button class="figma-help-btn" onclick="alert('BUILD TRI IDE Verification Engine\n• Real: Deterministic contract tests\n• Vibe: Autonomous prompt baseline\n• Hybrid: Human architect verified AST diffs')">Help</button>
+    </header>
+
+    <!-- ====================================================================
+         SCREEN 08: TEST · REAL (Figma Spec 08 Test · Real)
+         ==================================================================== -->
+    <div class="screen-view active" id="screenTest">
+      <div class="figma-body">
+        <!-- Sidebar Navigation -->
+        <aside class="figma-sidebar">
+          <div class="figma-sidebar-label">STAGES</div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Spec</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">02</span><span class="stage-label">Design</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">03</span><span class="stage-label">Scaffold</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenSecurity')"><div class="stage-main"><span class="stage-index">04</span><span class="stage-label">Security</span></div></div>
+          <div class="figma-stage-item active"><div class="stage-main"><span class="stage-index">05</span><span class="stage-label">Test</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">06</span><span class="stage-label">Deploy</span></div></div>
+          <div class="figma-sidebar-spacer"></div>
+          <div class="figma-sidebar-label">OUTPUTS</div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Documentation</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">02</span><span class="stage-label">Audit Log</span></div></div>
+          <div class="figma-stage-item" style="opacity:0.75;"><div class="stage-main"><span class="stage-index" style="color:#9AA2AF;">03</span><span class="stage-label" style="color:#6B7482;">Binary Package</span></div><span class="figma-lock-icon">🔒</span></div>
+        </aside>
+
+        <!-- Main Workspace (3-Column Test Execution Matrix) -->
+        <main class="figma-main">
+          <!-- Step Banner -->
+          <div class="figma-step-banner">
+            <div class="figma-banner-text">
+              <div class="figma-banner-step">Step 5 of 6: Run Real Automated Test Suite</div>
+              <div class="figma-banner-why">Validates deterministic assertion proof against generated contract with zero mocking</div>
+            </div>
+            <div class="figma-status-pill pass">
+              <span class="pill-label">ALL 6 SUITES PASSED</span>
+            </div>
+            <button class="figma-btn-primary" onclick="switchScreen('screenWorkspace')">Next step</button>
+          </div>
+
+          <!-- 3-Column Workspace -->
+          <div class="figma-test-workspace">
+            <!-- Col 1: Test Scope (200px) -->
+            <div class="figma-scope-card">
+              <div class="figma-card-label">TEST SCOPE</div>
+              <div class="figma-project-context">
+                <div class="figma-project-name">CloudSecure API</div>
+                <div class="figma-project-platform">Node.js 20 · Vitest</div>
+              </div>
+              <div class="figma-suite-filters">
+                <div class="figma-suite-filter active" onclick="filterSuites('all', this)"><span class="filter-label">All</span><span class="filter-count">24</span></div>
+                <div class="figma-suite-filter" onclick="filterSuites('unit', this)"><span class="filter-label">Unit</span><span class="filter-count">12</span></div>
+                <div class="figma-suite-filter" onclick="filterSuites('integration', this)"><span class="filter-label">Integration</span><span class="filter-count">8</span></div>
+                <div class="figma-suite-filter" onclick="filterSuites('e2e', this)"><span class="filter-label">E2E Smoke</span><span class="filter-count">4</span></div>
+              </div>
+              <div class="figma-run-env">
+                <div class="figma-card-label">RUN ENVIRONMENT</div>
+                <div class="figma-env-device">Docker Container · Ephemeral SQLite · Vitest v2.0</div>
+              </div>
+              <div class="figma-security-handoff">
+                <div class="figma-card-label">SECURITY HANDOFF</div>
+                <div class="handoff-summary">6/6 Cleared</div>
+                <div class="handoff-advisory">0 blocker findings passed into test execution</div>
+              </div>
+            </div>
+
+            <!-- Col 2: Test Results (664px) -->
+            <div class="figma-results-card">
+              <div class="figma-results-heading">
+                <div class="figma-title-group">
+                  <div class="figma-h2">Test Execution Matrix</div>
+                  <div class="figma-sub-desc">Deterministic test results with strict assertion proof</div>
+                </div>
+                <button class="figma-btn-secondary" id="btnRunTests" onclick="triggerTestRun()">Run tests</button>
+              </div>
+              <div class="figma-run-summary-bar">
+                <span class="figma-summary-passed" id="summaryPassed">24 Passed</span>
+                <span class="figma-summary-failed" id="summaryFailed">0 Failed</span>
+                <span class="figma-summary-skipped" id="summarySkipped">0 Skipped</span>
+                <span class="figma-summary-duration" id="summaryDuration">1.42s Total</span>
+              </div>
+              <div class="figma-suite-list" id="suiteListContainer">
+                <div class="figma-suite-row" onclick="selectSuite(this, 'jwt.test.ts', 'src/auth/jwt.test.ts:42', 'expect(res.status).toBe(200);\nexpect(token.exp).toBeGreaterThan(Date.now());')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">auth/jwt.test.ts</div><div class="figma-suite-desc">JWT token minting, claim verification, signature validation</div></div>
+                  <div class="figma-suite-duration">142ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+                <div class="figma-suite-row active" onclick="selectSuite(this, 'guard.test.ts', 'src/auth/guard.test.ts:42', 'expect(res.status).toBe(200);\nexpect(payload.role).toBe(\'admin\');\nexpect(res.header[\'x-jwt\']).toBeDefined();')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">auth/guard.test.ts</div><div class="figma-suite-desc">RBAC role enforcement, tenant boundary access protection</div></div>
+                  <div class="figma-suite-duration">188ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+                <div class="figma-suite-row" onclick="selectSuite(this, 'billing.test.ts', 'src/billing/stripe.test.ts:88', 'expect(event.processed).toBe(true);\nexpect(user.plan).toBe(\'enterprise\');')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">billing/stripe-webhook.test.ts</div><div class="figma-suite-desc">Webhook idempotency, subscription status change events</div></div>
+                  <div class="figma-suite-duration">246ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+                <div class="figma-suite-row" onclick="selectSuite(this, 'migration.test.ts', 'src/db/migrate.test.ts:31', 'expect(schema.foreignKeys).toHaveLength(14);\nexpect(schema.version).toBe(20260401);')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">db/migration.test.ts</div><div class="figma-suite-desc">Foreign key cascade rules, schema rollback validation</div></div>
+                  <div class="figma-suite-duration">312ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+                <div class="figma-suite-row" onclick="selectSuite(this, 'rate-limit.test.ts', 'src/middleware/rate-limit.test.ts:19', 'expect(res.status).toBe(429);\nexpect(res.header[\'retry-after\']).toBe(\'60\');')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">middleware/rate-limit.test.ts</div><div class="figma-suite-desc">Token bucket algorithm, 429 Retry-After header assertions</div></div>
+                  <div class="figma-suite-duration">195ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+                <div class="figma-suite-row" onclick="selectSuite(this, 'audit.test.ts', 'src/security/audit.test.ts:104', 'expect(log.prevHash).toBe(expectedHash);\nexpect(log.immutable).toBe(true);')">
+                  <div class="figma-circle-check"></div>
+                  <div class="figma-suite-info"><div class="figma-suite-title">security/audit-log.test.ts</div><div class="figma-suite-desc">Immutable append-only hash chains, audit trail integrity</div></div>
+                  <div class="figma-suite-duration">337ms</div>
+                  <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+                </div>
+              </div>
+              <div class="figma-results-note">Live results synchronized from Vitest reporter socket</div>
+            </div>
+
+            <!-- Col 3: Test Evidence (280px) -->
+            <div class="figma-evidence-card">
+              <div class="figma-card-label">TEST EVIDENCE</div>
+              <div class="figma-test-title-bar">
+                <div class="figma-h3" id="evidenceTitle">guard.test.ts</div>
+                <div class="figma-status-pill pass"><span class="pill-label">PASSED</span></div>
+              </div>
+              <div class="figma-explanation" id="evidenceDesc">
+                Validates JWT signature, claims, and role permissions on protected endpoint
+              </div>
+              <div class="figma-code-box">
+                <div class="figma-code-file" id="evidenceFile">src/auth/guard.test.ts:42</div>
+                <pre class="figma-code-snippet" id="evidenceSnippet"><code>expect(res.status).toBe(200);
+expect(payload.role).toBe('admin');
+expect(res.header['x-jwt']).toBeDefined();</code></pre>
+              </div>
+              <div class="figma-assertion-result">
+                <div class="figma-card-label">ASSERTION RESULT</div>
+                <div class="figma-assertion-values">
+                  <span class="figma-assertion-expected">expected: 200</span>
+                  <span class="figma-assertion-match">MATCH</span>
+                </div>
+                <div class="figma-assertion-units">Delta: 0ms · Strict equality</div>
+              </div>
+              <div class="figma-evidence-note">
+                <div class="note-title">Deterministic Proof</div>
+                <div class="note-desc">Test executed against isolated ephemeral SQLite instance. Determinism score: 100%.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminal Output -->
+          <div class="figma-terminal-box">
+            <div class="figma-terminal-heading">
+              <span class="label">TERMINAL EXECUTION LOG</span>
+              <span class="source">vitest --run --reporter=json</span>
+            </div>
+            <div class="figma-terminal-cmd">$ npm run test:unit</div>
+            <div class="figma-terminal-output">✓ src/auth/jwt.test.ts (6 tests) 142ms</div>
+            <div class="figma-terminal-cmd">$ npm run test:integration -- --coverage</div>
+            <div class="figma-terminal-output" id="terminalSummaryLine">Test Files: 6 passed (6) | Tests: 24 passed (24) | Duration: 1.42s | Coverage: 98.4%</div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="figma-playback-bar">
+            <button class="figma-control-btn" title="Restart" onclick="restartTimeline()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+            </button>
+            <button class="figma-control-btn active-play" id="btnPlaybackToggle" title="Pause / Play" onclick="togglePlayback()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </button>
+            <button class="figma-control-btn" title="Step" onclick="stepTimeline()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+            </button>
+            <div class="figma-playback-time" id="playbackClock">00:01:42</div>
+            <div class="figma-timeline-track" onclick="scrubTimeline(event)">
+              <div class="figma-timeline-progress" id="playbackProgress" style="width: 100%;"></div>
+            </div>
+            <button class="figma-speed-pill active" onclick="setPlaySpeed(1, this)">1x</button>
+            <button class="figma-speed-pill" onclick="setPlaySpeed(2, this)">2x</button>
+            <button class="figma-speed-pill" onclick="setPlaySpeed(4, this)">4x</button>
+          </div>
+        </main>
+      </div>
+
+      <!-- Status Bar -->
+      <footer class="figma-status-bar">
+        <div class="figma-status-left">BUILD TRI Engine v2.4.0 · TypeScript 5.4 · Ready</div>
+        <div class="figma-status-right">Playback: Real execution trace · 100% Deterministic</div>
+      </footer>
+    </div>
+
+    <!-- ====================================================================
+         SCREEN 07: SECURITY · REAL (Figma Spec 07 Security · Real)
+         ==================================================================== -->
+    <div class="screen-view" id="screenSecurity">
+      <div class="figma-body">
+        <aside class="figma-sidebar">
+          <div class="figma-sidebar-label">STAGES</div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Spec</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">02</span><span class="stage-label">Design</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenWorkspace')"><div class="stage-main"><span class="stage-index">03</span><span class="stage-label">Scaffold</span></div></div>
+          <div class="figma-stage-item active"><div class="stage-main"><span class="stage-index">04</span><span class="stage-label">Security</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenTest')"><div class="stage-main"><span class="stage-index">05</span><span class="stage-label">Test</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">06</span><span class="stage-label">Deploy</span></div></div>
+          <div class="figma-sidebar-spacer"></div>
+          <div class="figma-sidebar-label">OUTPUTS</div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Documentation</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">02</span><span class="stage-label">Audit Log</span></div></div>
+          <div class="figma-stage-item" style="opacity:0.75;"><div class="stage-main"><span class="stage-index" style="color:#9AA2AF;">03</span><span class="stage-label" style="color:#6B7482;">Binary Package</span></div><span class="figma-lock-icon">🔒</span></div>
+        </aside>
+
+        <main class="figma-main">
+          <!-- Step Banner -->
+          <div class="figma-step-banner">
+            <div class="figma-banner-text">
+              <div class="figma-banner-step">Step 4 of 6: Automated Security Audit & Static Analysis</div>
+              <div class="figma-banner-why">Pre-execution static analysis verifies OWASP Top 10 vulnerabilities & dependency CVEs</div>
+            </div>
+            <div class="figma-status-pill advisory">
+              <span class="pill-label">1 ADVISORY · 0 BLOCKERS</span>
+            </div>
+            <button class="figma-btn-primary" onclick="switchScreen('screenTest')">Next step</button>
+          </div>
+
+          <!-- 3-Column Security Workspace -->
+          <div class="figma-test-workspace">
+            <!-- Col 1: Scope -->
+            <div class="figma-scope-card">
+              <div class="figma-card-label">REVIEW SCOPE</div>
+              <div class="figma-project-context">
+                <div class="figma-project-name">CloudSecure API</div>
+                <div class="figma-project-platform">Node.js · Semgrep v1.75</div>
+              </div>
+              <div class="figma-suite-filters">
+                <div class="figma-suite-filter active"><span class="filter-label">Auth & Tokens</span><span class="filter-count">8</span></div>
+                <div class="figma-suite-filter"><span class="filter-label">Input Sanitization</span><span class="filter-count">6</span></div>
+                <div class="figma-suite-filter"><span class="filter-label">Access Control</span><span class="filter-count">8</span></div>
+                <div class="figma-suite-filter"><span class="filter-label">Cryptography</span><span class="filter-count">6</span></div>
+                <div class="figma-suite-filter"><span class="filter-label">Dependencies</span><span class="filter-count">6</span></div>
+              </div>
+              <div class="figma-security-handoff" style="margin-top:auto;">
+                <div class="figma-card-label">SENSITIVE DATA</div>
+                <div class="handoff-summary">AES-GCM-256</div>
+                <div class="handoff-advisory">All PII encrypted before database write</div>
+              </div>
+            </div>
+
+            <!-- Col 2: Findings -->
+            <div class="figma-results-card">
+              <div class="figma-results-heading">
+                <div class="figma-title-group">
+                  <div class="figma-h2">Security Review Matrix</div>
+                  <div class="figma-sub-desc">Static analysis and rule matching across active branch</div>
+                </div>
+                <button class="figma-btn-secondary" onclick="alert('Exporting audit report as PDF / SARIF...')">Report</button>
+              </div>
+              <div class="figma-run-summary-bar">
+                <span class="figma-summary-passed">28 Cleared</span>
+                <span style="font-family:'Inter'; font-size:12px; color:#8A5A12; font-weight:500;">1 Advisory</span>
+                <span class="figma-summary-skipped">0 Blockers</span>
+                <span class="figma-summary-duration">0.88s Scan</span>
+              </div>
+              <div class="figma-suite-list">
+                <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">No Hardcoded Secrets</div><div class="figma-suite-desc">Entropy scanning verified zero exposed keys or passwords</div></div><div class="figma-status-pill pass"><span class="pill-label">CLEARED</span></div></div>
+                <div class="figma-suite-row active"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">SQL Injection Prevention</div><div class="figma-suite-desc">Parameterized query check across Prisma and raw database calls</div></div><div class="figma-status-pill pass"><span class="pill-label">CLEARED</span></div></div>
+                <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">CORS Origin Isolation</div><div class="figma-suite-desc">Restricts wildcard origin; credentials headers strictly validated</div></div><div class="figma-status-pill pass"><span class="pill-label">CLEARED</span></div></div>
+                <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">JWT Expiry Window</div><div class="figma-suite-desc">Max 15 minute lifespan with rotating refresh tokens</div></div><div class="figma-status-pill pass"><span class="pill-label">CLEARED</span></div></div>
+                <div class="figma-suite-row"><div class="figma-circle-alert"></div><div class="figma-suite-info"><div class="figma-suite-title">Rate Limiting Key Resolution</div><div class="figma-suite-desc">Falling back to IP when x-api-key is not provided</div></div><div class="figma-status-pill advisory"><span class="pill-label">ADVISORY</span></div></div>
+              </div>
+              <div class="figma-results-note">Verified against OWASP ASVS v4.0.3 L2 standard</div>
+            </div>
+
+            <!-- Col 3: Code Evidence -->
+            <div class="figma-evidence-card">
+              <div class="figma-card-label">FINDING DETAILS</div>
+              <div class="figma-test-title-bar">
+                <div class="figma-h3">SQL Injection</div>
+                <div class="figma-status-pill pass"><span class="pill-label">CLEARED</span></div>
+              </div>
+              <div class="figma-explanation">
+                Validates all database calls use strongly-typed AST parameterization.
+              </div>
+              <div class="figma-code-box">
+                <div class="figma-code-file">src/auth/service.py:78</div>
+                <pre class="figma-code-snippet"><code>stmt = select(User).where(
+    User.tenant_id == tenant_id,
+    User.email == bindparam('email')
+)</code></pre>
+              </div>
+              <div class="figma-assertion-result">
+                <div class="figma-card-label">REVIEW EVIDENCE</div>
+                <div style="font-family:'Inter'; font-size:12px; color:#4B5361;">AST tree inspection confirms 0 raw string concatenations.</div>
+              </div>
+              <div class="figma-evidence-note">
+                <div class="note-title">Security Boundary</div>
+                <div class="note-desc">Strict schema typing active. Injection vector surface reduced to 0%.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminal Output -->
+          <div class="figma-terminal-box">
+            <div class="figma-terminal-heading">
+              <span class="label">SECURITY SCAN OUTPUT</span>
+              <span class="source">semgrep --config p/owasp-top-ten</span>
+            </div>
+            <div class="figma-terminal-cmd">$ semgrep scan --error --strict</div>
+            <div class="figma-terminal-output">✓ 28 rules evaluated: 0 blockers, 1 advisory</div>
+            <div class="figma-terminal-cmd">$ npm audit --audit-level=high</div>
+            <div class="figma-terminal-output">found 0 vulnerabilities across 412 packages</div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="figma-playback-bar">
+            <button class="figma-control-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
+            <button class="figma-control-btn active-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+            <button class="figma-control-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+            <div class="figma-playback-time">00:00:88</div>
+            <div class="figma-timeline-track"><div class="figma-timeline-progress" style="width: 100%;"></div></div>
+            <button class="figma-speed-pill active">1x</button>
+            <button class="figma-speed-pill">2x</button>
+            <button class="figma-speed-pill">4x</button>
+          </div>
+        </main>
+      </div>
+
+      <footer class="figma-status-bar">
+        <div class="figma-status-left">Semgrep Engine v1.75 · AST Inspector · Active</div>
+        <div class="figma-status-right">Audit Status: 100% Policy Conformance</div>
+      </footer>
+    </div>
+
+    <!-- ====================================================================
+         SCREEN 03: WORKSPACE OVERVIEW (Figma Spec 03 Workspace overview)
+         ==================================================================== -->
+    <div class="screen-view" id="screenWorkspace">
+      <div class="figma-body">
+        <aside class="figma-sidebar">
+          <div class="figma-sidebar-label">STAGES</div>
+          <div class="figma-stage-item active"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Overview</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenSecurity')"><div class="stage-main"><span class="stage-index">04</span><span class="stage-label">Security</span></div></div>
+          <div class="figma-stage-item" onclick="switchScreen('screenTest')"><div class="stage-main"><span class="stage-index">05</span><span class="stage-label">Test</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">06</span><span class="stage-label">Deploy</span></div></div>
+          <div class="figma-sidebar-spacer"></div>
+          <div class="figma-sidebar-label">OUTPUTS</div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">01</span><span class="stage-label">Documentation</span></div></div>
+          <div class="figma-stage-item"><div class="stage-main"><span class="stage-index">02</span><span class="stage-label">Audit Log</span></div></div>
+        </aside>
+
+        <main class="figma-main" style="padding: 24px; gap: 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <div>
+              <div class="figma-h1" style="font-size:28px; font-weight:600; color:#12151B;">Workspace Overview</div>
+              <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Compare benchmarks across Real, Vibe, and Hybrid execution lanes</div>
+            </div>
+            <button class="figma-btn-primary" onclick="switchScreen('screenTest')">Enter Test Matrix</button>
+          </div>
+
+          <!-- 3 Approach Cards -->
+          <div class="figma-cards-row">
+            <div class="figma-card-box">
+              <div class="figma-status-pill pass" style="width:fit-content;"><span class="pill-label">REAL</span></div>
+              <div style="font-family:'Inter'; font-weight:600; font-size:16px;">Deterministic Baseline</div>
+              <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Zero mock dependencies. 100% human-verified architecture.</div>
+              <div style="margin-top:auto; font-family:'JetBrains Mono'; font-size:12px; color:#166A3A; font-weight:500;">Quality: 98.4% · Tests: 24/24</div>
+            </div>
+
+            <div class="figma-card-box">
+              <div class="figma-status-pill blocker" style="width:fit-content;"><span class="pill-label">VIBE</span></div>
+              <div style="font-family:'Inter'; font-weight:600; font-size:16px;">Autonomous Prototype</div>
+              <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">High speed scaffolding directly from intent. Lacks contract proof.</div>
+              <div style="margin-top:auto; font-family:'JetBrains Mono'; font-size:12px; color:#A02A25; font-weight:500;">Quality: 62.0% · Tests: 14/24</div>
+            </div>
+
+            <div class="figma-card-box">
+              <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB; width:fit-content;"><span class="pill-label" style="color:#2358BB; font-weight:500; font-size:11px;">HYBRID</span></div>
+              <div style="font-family:'Inter'; font-weight:600; font-size:16px;">AI-Assisted Pair</div>
+              <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Architect verifies AST diffs before disk writes. Optimal throughput.</div>
+              <div style="margin-top:auto; font-family:'JetBrains Mono'; font-size:12px; color:#2358BB; font-weight:500;">Quality: 95.8% · Tests: 23/24</div>
+            </div>
+          </div>
+
+          <!-- Stage Table Card -->
+          <div class="figma-results-card" style="width:100%; height:auto;">
+            <div style="padding:16px; border-bottom:1px solid #E1E4E9; font-weight:600; font-size:16px;">Stage Progression Table</div>
+            <div class="figma-suite-list" style="max-height:none;">
+              <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">01. Requirements & User Stories</div><div class="figma-suite-desc">Spec locked with testable acceptance criteria</div></div><div class="figma-status-pill pass"><span class="pill-label">COMPLETED</span></div></div>
+              <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">02. Architecture & Data Contracts</div><div class="figma-suite-desc">OpenAPI 3.1 & Prisma Schema verified</div></div><div class="figma-status-pill pass"><span class="pill-label">COMPLETED</span></div></div>
+              <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">03. Code Scaffolding</div><div class="figma-suite-desc">Fullstack TypeScript baseline initialized</div></div><div class="figma-status-pill pass"><span class="pill-label">COMPLETED</span></div></div>
+              <div class="figma-suite-row"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">04. Security Audit</div><div class="figma-suite-desc">OWASP Top 10 rules passed with 0 blockers</div></div><div class="figma-status-pill pass"><span class="pill-label">COMPLETED</span></div></div>
+              <div class="figma-suite-row active"><div class="figma-circle-check"></div><div class="figma-suite-info"><div class="figma-suite-title">05. Automated Testing</div><div class="figma-suite-desc">24 Vitest suites passing deterministically</div></div><div class="figma-status-pill pass"><span class="pill-label">ACTIVE</span></div></div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <footer class="figma-status-bar">
+        <div class="figma-status-left">Workspace Sync: 3 Git Worktrees Active</div>
+        <div class="figma-status-right">State: Pristine</div>
+      </footer>
+    </div>
+
+    <!-- ====================================================================
+         SCREEN 02: SETUP (Figma Spec 02 Setup)
+         ==================================================================== -->
+    <div class="screen-view" id="screenSetup">
+      <div class="figma-setup-canvas">
+        <div class="figma-setup-card">
+          <div class="figma-h1" style="font-size:28px; font-weight:600; color:#12151B;">Project Setup</div>
+          <div style="font-family:'Inter'; font-size:14px; color:#4B5361;">Configure your engineering benchmark and target runtime environment</div>
+
+          <!-- Project Type Toggle -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="font-weight:500; font-size:14px;">Project Type</div>
+            <div class="figma-product-type">
+              <div class="figma-segment active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active');"><span class="segment-label">API Service</span></div>
+              <div class="figma-segment" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active');"><span class="segment-label">Fullstack Web</span></div>
+            </div>
+          </div>
+
+          <!-- Sample Projects Radio Selection -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="font-weight:500; font-size:14px;">Select Benchmark Target</div>
+            <div class="figma-radio-cards-row">
+              <div class="figma-radio-card active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active');">
+                <div class="figma-radio-circle"></div>
+                <div>
+                  <div style="font-weight:500; font-size:14px; color:#12151B;">CloudSecure API</div>
+                  <div style="font-size:12px; color:#4B5361;">FastAPI/Node.js multi-tenant auth with strict RBAC & SQLite</div>
+                </div>
+              </div>
+              <div class="figma-radio-card" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active');">
+                <div class="figma-radio-circle"></div>
+                <div>
+                  <div style="font-weight:500; font-size:14px; color:#12151B;">SaaS Starter Hub</div>
+                  <div style="font-size:12px; color:#4B5361;">Next.js 14 App Router, Stripe billing, and Prisma ORM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Path Input -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size:12px; color:#4B5361;">Local Workspace Directory</div>
+            <input class="figma-input-field" type="text" value="C:\Projects\benchmark-cloudsecure" readonly>
+            <div style="font-size:12px; color:#6B7482;">Creates isolated worktrees for real, vibe, and hybrid test tracks</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+            <button class="figma-btn-secondary" onclick="switchScreen('screenHome')">Back</button>
+            <button class="figma-btn-primary" onclick="switchScreen('screenTest')">Initialize Workspace</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         SCREEN 01: HOME (Figma Spec 01 Home)
+         ==================================================================== -->
+    <div class="screen-view" id="screenHome">
+      <div class="figma-home-canvas">
+        <div class="figma-home-hero">
+          <div class="figma-hero-copy">
+            <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB; width:fit-content;">
+              <span class="pill-label" style="color:#2358BB; font-size:11px; font-weight:500;">BENCHMARK PLATFORM 2K26</span>
+            </div>
+            <div class="figma-display-title">
+              Build Software with Real Verification
+            </div>
+            <div style="font-family:'Inter'; font-size:14px; line-height:22px; color:#4B5361;">
+              Vibe coding creates technical debt. BUILD TRI measures manual craftsmanship vs. hybrid AI pairing vs. autonomous vibe coding across identical production contracts.
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button class="figma-btn-primary" onclick="switchScreen('screenTest')">Open Test Matrix</button>
+              <button class="figma-btn-secondary" onclick="switchScreen('screenSetup')">Setup Project</button>
+            </div>
+          </div>
+
+          <!-- Hero Preview (Real vs Vibe Nodes) -->
+          <div class="figma-hero-preview">
+            <div class="figma-card-label">PIPELINE VERIFICATION</div>
+            
+            <div class="figma-lane-row">
+              <div style="font-size:11px; font-weight:500; text-transform:uppercase; color:#4B5361;">LANE REAL</div>
+              <div class="figma-nodes-row">
+                <div class="figma-stage-node"><div class="figma-circle-check" style="width:14px; height:14px;"></div><span style="font-size:12px; font-weight:500;">Spec</span></div>
+                <div class="figma-stage-node"><div class="figma-circle-check" style="width:14px; height:14px;"></div><span style="font-size:12px; font-weight:500;">Design</span></div>
+                <div class="figma-stage-node"><div class="figma-circle-check" style="width:14px; height:14px;"></div><span style="font-size:12px; font-weight:500;">Scaffold</span></div>
+                <div class="figma-stage-node"><div class="figma-circle-check" style="width:14px; height:14px;"></div><span style="font-size:12px; font-weight:500;">Test</span></div>
+              </div>
+            </div>
+
+            <div class="figma-lane-row">
+              <div style="font-size:11px; font-weight:500; text-transform:uppercase; color:#4B5361;">LANE VIBE</div>
+              <div class="figma-nodes-row">
+                <div class="figma-stage-node vibe-dim"><span style="font-size:12px; color:#6B7482;">— Spec</span></div>
+                <div class="figma-stage-node"><div class="figma-circle-check" style="width:14px; height:14px;"></div><span style="font-size:12px; font-weight:500;">Prompt</span></div>
+                <div class="figma-stage-node vibe-dim"><span style="font-size:12px; color:#6B7482;">— Audit</span></div>
+                <div class="figma-stage-node vibe-dim"><span style="font-size:12px; color:#6B7482;">— Drift</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Three Ways Section -->
+        <div class="figma-problem-section">
+          <div class="figma-h1" style="font-size:28px; font-weight:600;">The Three Ways</div>
+          <div class="figma-cards-row">
+            <div class="figma-card-box">
+              <div class="figma-status-pill pass" style="width:fit-content;"><span class="pill-label">REAL</span></div>
+              <div style="font-weight:600; font-size:16px;">Deterministic Baseline</div>
+              <div style="font-size:14px; color:#4B5361;">Zero mock dependencies. 100% human-verified architecture.</div>
+            </div>
+            <div class="figma-card-box">
+              <div class="figma-status-pill blocker" style="width:fit-content;"><span class="pill-label">VIBE</span></div>
+              <div style="font-weight:600; font-size:16px;">Autonomous Prototype</div>
+              <div style="font-size:14px; color:#4B5361;">Prompt-only flow. Zero regression prevention. High failure in prod.</div>
+            </div>
+            <div class="figma-card-box">
+              <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB; width:fit-content;"><span class="pill-label" style="color:#2358BB; font-weight:500; font-size:11px;">HYBRID</span></div>
+              <div style="font-weight:600; font-size:16px;">AI-Assisted Pair</div>
+              <div style="font-size:14px; color:#4B5361;">Architect verifies every AST diff. Maximum engineering leverage.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Screen Navigation
+    function switchScreen(screenId, btn) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+
+      if (btn) {
+        document.querySelectorAll('.figma-screen-nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      const stageMap = {
+        'screenTest': '05 Test · Real',
+        'screenSecurity': '04 Security · Real',
+        'screenWorkspace': '03 Workspace Overview',
+        'screenSetup': '02 Setup Wizard',
+        'screenHome': '01 Home'
+      };
+      if (stageMap[screenId]) {
+        document.getElementById('topStageName').textContent = stageMap[screenId];
+      }
+    }
+
+    // Lane Toggle
+    function setLane(laneId) {
+      document.querySelectorAll('.figma-version-track').forEach(t => {
+        if (t.dataset.lane === laneId) t.classList.add('active');
+        else t.classList.remove('active');
+      });
+    }
+
+    // Product Type Toggle
+    function setProductType(type) {
+      document.querySelectorAll('.figma-segment').forEach(s => {
+        if (s.dataset.type === type) s.classList.add('active');
+        else s.classList.remove('active');
+      });
+    }
+
+    // Test Suite Selection
+    function selectSuite(rowEl, title, file, snippet) {
+      document.querySelectorAll('.figma-suite-row').forEach(r => r.classList.remove('active'));
+      rowEl.classList.add('active');
+      document.getElementById('evidenceTitle').textContent = title;
+      document.getElementById('evidenceFile').textContent = file;
+      document.getElementById('evidenceSnippet').innerHTML = '<code>' + snippet + '</code>';
+    }
+
+    // Interactive Test Run Simulation
+    function triggerTestRun() {
+      const btn = document.getElementById('btnRunTests');
+      btn.textContent = 'Running...';
+      btn.style.opacity = '0.6';
+      
+      const progress = document.getElementById('playbackProgress');
+      progress.style.width = '0%';
+      let val = 0;
+      const interval = setInterval(() => {
+        val += 20;
+        progress.style.width = val + '%';
+        if (val >= 100) {
+          clearInterval(interval);
+          btn.textContent = 'Run tests';
+          btn.style.opacity = '1';
+          document.getElementById('summaryPassed').textContent = '24 Passed';
+          document.getElementById('summaryDuration').textContent = '1.42s Total';
+        }
+      }, 120);
+    }
+
+    // Playback Controls
+    let isPlaying = true;
+    function togglePlayback() {
+      isPlaying = !isPlaying;
+      const btn = document.getElementById('btnPlaybackToggle');
+      if (isPlaying) {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+      } else {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+      }
+    }
+
+    function restartTimeline() {
+      document.getElementById('playbackProgress').style.width = '0%';
+      document.getElementById('playbackClock').textContent = '00:00:00';
+      setTimeout(() => {
+        document.getElementById('playbackProgress').style.width = '100%';
+        document.getElementById('playbackClock').textContent = '00:01:42';
+      }, 300);
+    }
+
+    function stepTimeline() {
+      let cur = parseInt(document.getElementById('playbackProgress').style.width) || 0;
+      cur = (cur + 25) % 125;
+      document.getElementById('playbackProgress').style.width = cur + '%';
+    }
+
+    function scrubTimeline(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100)));
+      document.getElementById('playbackProgress').style.width = pct + '%';
+    }
+
+    function setPlaySpeed(spd, btn) {
+      document.querySelectorAll('.figma-speed-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function filterSuites(filter, el) {
+      document.querySelectorAll('.figma-suite-filter').forEach(f => f.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>

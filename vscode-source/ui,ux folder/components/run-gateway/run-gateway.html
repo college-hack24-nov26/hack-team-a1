@@ -1,0 +1,85 @@
+<!-- BUILD TRI - Verification Gateway Component (Figma Precision) -->
+<section class="figma-results-card" style="width:100%; height:auto; padding:20px; gap:16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <div class="figma-status-pill pass" style="width:fit-content; margin-bottom:4px;">
+        <span class="pill-label">STAGE VERIFICATION GATEWAY</span>
+      </div>
+      <div class="figma-h2">5-Tool Quality, Security & Coverage Suite</div>
+    </div>
+    <button class="figma-btn-primary" onclick="triggerTestRun()">
+      <span>▶</span> Run Verification Suite
+    </button>
+  </div>
+
+  <!-- 5 Tool Grid -->
+  <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; width:100%;">
+    <!-- Vitest -->
+    <div class="figma-card-box" style="padding:12px; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:16px;">⚡</span>
+        <div class="figma-status-pill pass"><span class="pill-label">PASS</span></div>
+      </div>
+      <div style="font-weight:600; font-size:13px; color:#12151B;">Vitest</div>
+      <div style="font-size:12px; font-weight:500; color:#166A3A;">24/24 Passed</div>
+      <div style="font-size:11px; color:#6B7482;">Unit & Contract Tests</div>
+    </div>
+
+    <!-- Playwright -->
+    <div class="figma-card-box" style="padding:12px; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:16px;">🎭</span>
+        <div class="figma-status-pill pass"><span class="pill-label">PASS</span></div>
+      </div>
+      <div style="font-weight:600; font-size:13px; color:#12151B;">Playwright</div>
+      <div style="font-size:12px; font-weight:500; color:#166A3A;">All Green</div>
+      <div style="font-size:11px; color:#6B7482;">End-to-End Journeys</div>
+    </div>
+
+    <!-- ESLint -->
+    <div class="figma-card-box" style="padding:12px; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:16px;">🔍</span>
+        <div class="figma-status-pill pass"><span class="pill-label">CLEAN</span></div>
+      </div>
+      <div style="font-weight:600; font-size:13px; color:#12151B;">ESLint</div>
+      <div style="font-size:12px; font-weight:500; color:#166A3A;">0 Errors</div>
+      <div style="font-size:11px; color:#6B7482;">Strict Static Analysis</div>
+    </div>
+
+    <!-- Semgrep / Audit -->
+    <div class="figma-card-box" style="padding:12px; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:16px;">🛡️</span>
+        <div class="figma-status-pill pass"><span class="pill-label">0 CVE</span></div>
+      </div>
+      <div style="font-weight:600; font-size:13px; color:#12151B;">Audit & SAST</div>
+      <div style="font-size:12px; font-weight:500; color:#166A3A;">0 Vulnerabilities</div>
+      <div style="font-size:11px; color:#6B7482;">OWASP Top 10 Conformance</div>
+    </div>
+
+    <!-- Coverage -->
+    <div class="figma-card-box" style="padding:12px; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:16px;">📊</span>
+        <div class="figma-status-pill" style="background:#EAF1FD; border:1px solid #D3E3FB;"><span class="pill-label" style="color:#2358BB; font-weight:500; font-size:11px;">98.4%</span></div>
+      </div>
+      <div style="font-weight:600; font-size:13px; color:#12151B;">Coverage</div>
+      <div style="font-size:12px; font-weight:500; color:#2358BB;">12/12 REQ Tags</div>
+      <div style="font-size:11px; color:#6B7482;">Requirements Traceability</div>
+    </div>
+  </div>
+
+  <!-- Verification Terminal Log -->
+  <div class="figma-terminal-box" style="width:100%; height:auto; min-height:120px;">
+    <div class="figma-terminal-heading">
+      <span class="label">TERMINAL GATEWAY EXECUTION</span>
+      <span class="source">vitest run --coverage</span>
+    </div>
+    <div class="figma-terminal-cmd">$ npm run test:all -- --json</div>
+    <div class="figma-terminal-output">✓ tests/unit/auth.test.ts (6 tests) 142ms</div>
+    <div class="figma-terminal-output">✓ tests/unit/guard.test.ts (6 tests) 188ms [REQ-1, REQ-2]</div>
+    <div class="figma-terminal-output">✓ tests/unit/stripe.test.ts (6 tests) 246ms [REQ-3, REQ-4]</div>
+    <div class="figma-terminal-output">Test Files: 6 passed | Tests: 24 passed | Duration: 1.42s | Coverage: 98.4%</div>
+  </div>
+</section>
