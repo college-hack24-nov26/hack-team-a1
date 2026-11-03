@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buildtri Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="buildtri-container">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-mark">&#9670;</span>
+        <span class="logo-text">BUILDTRI</span>
+        <span class="version-tag">M3 Studio</span>
+      </div>
+      <div class="topbar-actions">
+        <span id="current-stage-badge" class="badge badge-active">requirement [active]</span>
+        <button id="btn-compare" class="btn btn-secondary">Compare</button>
+        <button id="btn-refresh" class="btn btn-secondary">Refresh State</button>
+      </div>
+    </header>
+
+    <!-- Main 3-Column Layout -->
+    <main class="layout-grid">
+      <!-- Left Column: Stage Rail -->
+      <aside class="sidebar-rail">
+        <div class="column-header">
+          <h3>Stage Rail</h3>
+        </div>
+        <div id="stage-rail" class="stage-list">
+          <div id="stage-item-requirement" class="stage-item active">
+            <span class="stage-number">1</span>
+            <div class="stage-meta">
+              <span class="stage-title">Requirement</span>
+              <span class="stage-status-label status-active">active</span>
+            </div>
+          </div>
+          <div id="stage-item-plan" class="stage-item locked">
+            <span class="stage-number">2</span>
+            <div class="stage-meta">
+              <span class="stage-title">Plan</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-design" class="stage-item locked">
+            <span class="stage-number">3</span>
+            <div class="stage-meta">
+              <span class="stage-title">Design</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-build" class="stage-item locked">
+            <span class="stage-number">4</span>
+            <div class="stage-meta">
+              <span class="stage-title">Build</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-test" class="stage-item locked">
+            <span class="stage-number">5</span>
+            <div class="stage-meta">
+              <span class="stage-title">Test</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-security" class="stage-item locked">
+            <span class="stage-number">6</span>
+            <div class="stage-meta">
+              <span class="stage-title">Security</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-release" class="stage-item locked">
+            <span class="stage-number">7</span>
+            <div class="stage-meta">
+              <span class="stage-title">Release</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+          <div id="stage-item-deploy" class="stage-item locked">
+            <span class="stage-number">8</span>
+            <div class="stage-meta">
+              <span class="stage-title">Deploy</span>
+              <span class="stage-status-label status-locked">locked</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Column: Artifact Viewer & Gating -->
+      <section class="artifact-center">
+        <div class="column-header">
+          <h2 id="current-stage-title">Requirement Stage</h2>
+        </div>
+
+        <!-- Gate Status Card -->
+        <div id="gate-status-card" class="gate-card gate-active">
+          <div class="gate-header">
+            <div class="gate-title-group">
+              <h4 id="gate-card-title">Requirement Gate</h4>
+              <span id="gate-stage-badge" class="badge badge-active">active</span>
+            </div>
+            <button id="btn-complete-stage" class="btn btn-primary">Complete Stage</button>
+          </div>
+          <div id="gate-warning" class="gate-warning" style="display: none;"></div>
+          <ul id="gate-reasons-list" class="reasons-list">
+            <li>No requirements defined. At least 1 requirement is needed.</li>
+          </ul>
+        </div>
+
+        <!-- AI Assistant Section (Collapsible Drawer below Gate Card) -->
+        <div id="ai-section" class="form-card" style="border-left: 4px solid var(--lane-vibe);">
+          <div class="form-header" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" id="ai-drawer-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h4>Gemini AI Assistant</h4>
+              <span id="ai-key-badge" class="badge badge-locked">Key: not set</span>
+              <span id="ai-model-badge" class="badge badge-locked">Set aiModel in config.json</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="ai-status-line" class="status-locked" style="font-size: 11px;">idle</span>
+              <button id="btn-toggle-ai" class="btn btn-secondary btn-sm" type="button">Toggle</button>
+            </div>
+          </div>
+
+          <div id="ai-drawer-body" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+            <div class="form-field">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="ai-prompt-input">Prompt</label>
+                <span id="ai-prompt-char-count" style="font-size: 11px; opacity: 0.7;">0 / 8000</span>
+              </div>
+              <textarea id="ai-prompt-input" class="input-textarea" rows="3" placeholder="e.g. Write a JavaScript function add(a, b) with a one-line comment"></textarea>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="ai-include-selection" />
+                <span>Include selected text from active editor (context)</span>
+              </label>
+            </div>
+
+            <div class="form-field">
+              <label>Link to Requirements</label>
+              <div id="ai-req-checkboxes" class="checkbox-container">
+                <span class="empty-state-sm">No requirements defined.</span>
+              </div>
+            </div>
+
+            <div class="form-actions" style="align-items: center; justify-content: space-between;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button id="btn-ai-send" class="btn btn-primary" disabled>Send</button>
+                <button id="btn-ai-cancel" class="btn btn-danger btn-sm" style="display: none;">Cancel</button>
+              </div>
+              <button id="btn-ai-insert" class="btn btn-secondary" disabled>Insert into active file</button>
+            </div>
+
+            <div class="form-field" id="ai-response-container" style="display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label>AI Response (plain text only)</label>
+                <span id="ai-truncation-note" style="font-size: 10px; color: var(--lane-vibe); display: none;">[Truncated]</span>
+              </div>
+              <pre id="ai-response-box" class="code-box log-window" style="min-height: 80px; max-height: 250px; user-select: text; white-space: pre-wrap; font-family: var(--vscode-editor-font-family, monospace);"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Requirement Stage -->
+        <div id="view-requirement" class="stage-view-panel">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Requirements List</h3>
+              <span id="req-count-badge" class="count-pill">0</span>
+            </div>
+            <div id="req-list" class="item-cards">
+              <div class="empty-state">No requirements defined yet.</div>
+            </div>
+          </div>
+
+          <!-- Orphan REQ Tags Section (from trace scan) -->
+          <div class="section-block" id="orphan-tags-section" style="display: none;">
+            <div class="section-title-row">
+              <h3>Orphan REQ Tags</h3>
+              <small style="opacity: 0.8; color: var(--blocked-color);">Tagged REQ IDs that do not exist</small>
+            </div>
+            <div id="orphan-tags-list" class="item-cards"></div>
+          </div>
+
+          <!-- Change Panel (visible when a REQ has status 'changed') -->
+          <div class="form-card" id="change-panel" style="display: none; border-left: 4px solid var(--lane-vibe);">
+            <div class="form-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <h4 id="change-panel-heading">Requirement Change Flow: <span id="change-req-id"></span></h4>
+              <span id="change-req-status-badge" class="badge badge-changed">changed</span>
+            </div>
+
+            <div class="item-card-details">
+              <div><strong>Changed Fields:</strong> <span id="change-req-fields">title, criteria</span></div>
+              <div style="margin-top: 6px;"><strong>Impacted Code Files:</strong> <span id="change-req-files">none</span></div>
+              <div><strong>Impacted Tests:</strong> <span id="change-req-tests">none tagged</span></div>
+            </div>
+
+            <div class="form-field">
+              <label for="change-lane-select">Select Lane</label>
+              <select id="change-lane-select" class="input-text">
+                <option value="hybrid" selected>Hybrid (AI draft, human reviewed)</option>
+                <option value="vibe">Vibe (AI code, pending review)</option>
+                <option value="manual">Manual (Human authored)</option>
+              </select>
+            </div>
+
+            <div class="form-actions">
+              <button id="btn-change-confirm" class="btn btn-primary">Confirm and run checks</button>
+              <button id="btn-change-cancel" class="btn btn-danger btn-sm" style="display: none;">Cancel</button>
+            </div>
+
+            <div id="change-log-console" class="terminal-box log-window" style="min-height: 120px; display: none;">
+              <div class="log-line info">[Change runner console ready]</div>
+            </div>
+
+            <div id="change-result-box" style="display: none; padding: 10px; border-radius: 4px; background: rgba(0,0,0,0.2);">
+              <div><strong>Step 1 (Tests):</strong> <span id="change-test-step-status">-</span></div>
+              <div><strong>Step 2 (Security):</strong> <span id="change-sec-step-status">-</span></div>
+              <div style="margin-top: 6px;"><strong>Overall Result:</strong> <span id="change-overall-outcome" class="badge">-</span></div>
+            </div>
+          </div>
+
+          <div class="form-card" id="req-form">
+            <div class="form-header">
+              <h4 id="req-form-mode">Create New Requirement</h4>
+            </div>
+            <input type="hidden" id="req-form-id" value="" />
+            <div class="form-field">
+              <label for="req-title-input">Title</label>
+              <input type="text" id="req-title-input" class="input-text" placeholder="e.g. User Authentication" />
+            </div>
+            <div class="form-field">
+              <label for="req-criteria-input">Acceptance Criteria (one per line)</label>
+              <textarea id="req-criteria-input" class="input-textarea" rows="3" placeholder="Criterion 1&#10;Criterion 2"></textarea>
+            </div>
+            <div class="form-actions">
+              <button id="btn-req-save" class="btn btn-primary">Save Requirement</button>
+              <button id="btn-req-clear" class="btn btn-secondary">Clear</button>
+            </div>
+          </div>
+
+          <!-- Change Log Section (changes.md) -->
+          <div class="section-block" id="change-log-section">
+            <div class="section-title-row">
+              <h3>Change Log (changes.md)</h3>
+              <small style="opacity: 0.7;">Last 10 entries</small>
+            </div>
+            <div id="changes-headings-list" class="item-cards">
+              <div class="empty-state-sm">No changes recorded in changes.md yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Plan Stage -->
+        <div id="view-plan" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Tasks List (Plan)</h3>
+              <span id="task-count-badge" class="count-pill">0</span>
+            </div>
+            <div id="task-list" class="item-cards">
+              <div class="empty-state">No tasks created yet.</div>
+            </div>
+          </div>
+
+          <div class="form-card" id="task-form">
+            <div class="form-header">
+              <h4 id="task-form-mode">Create New Task</h4>
+            </div>
+            <input type="hidden" id="task-form-id" value="" />
+            <div class="form-field">
+              <label for="task-title-input">Task Title</label>
+              <input type="text" id="task-title-input" class="input-text" placeholder="e.g. Implement auth controller" />
+            </div>
+            <div class="form-field">
+              <label>Covered Requirements</label>
+              <div id="task-req-checkboxes" class="checkbox-container">
+                <span class="empty-state-sm">No requirements available to link.</span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button id="btn-task-save" class="btn btn-primary">Save Task</button>
+              <button id="btn-task-clear" class="btn btn-secondary">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Design Stage -->
+        <div id="view-design" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Design Specs List</h3>
+              <span id="design-count-badge" class="count-pill">0</span>
+            </div>
+            <div id="design-list" class="item-cards">
+              <div class="empty-state">No design specs registered.</div>
+            </div>
+          </div>
+
+          <div class="form-card" id="design-form">
+            <div class="form-header">
+              <h4 id="design-form-mode">Create New Design Spec</h4>
+            </div>
+            <input type="hidden" id="design-form-id" value="" />
+            <div class="form-field">
+              <label for="design-title-input">Design Title</label>
+              <input type="text" id="design-title-input" class="input-text" placeholder="e.g. Auth Architecture Diagram" />
+            </div>
+            <div class="form-field">
+              <label for="design-path-input">Doc Path (optional)</label>
+              <input type="text" id="design-path-input" class="input-text" placeholder="docs/design/auth.md" />
+            </div>
+            <div class="form-field">
+              <label>Covered Requirements</label>
+              <div id="design-req-checkboxes" class="checkbox-container">
+                <span class="empty-state-sm">No requirements available to link.</span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button id="btn-design-save" class="btn btn-primary">Save Design</button>
+              <button id="btn-design-clear" class="btn btn-secondary">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Build Stage (Lanes Panel) -->
+        <div id="view-build" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Code Lanes Legend</h3>
+            </div>
+            <div id="build-lane-legend" class="legend-grid">
+              <div class="legend-card lane-vibe-box">
+                <span class="lane-tag lane-vibe">Vibe</span>
+                <p>AI-generated code, pending human review. <strong>Blocks build gate</strong> until approved.</p>
+              </div>
+              <div class="legend-card lane-hybrid-box">
+                <span class="lane-tag lane-hybrid">Hybrid</span>
+                <p>AI draft, edited and reviewed by human. Approved for build.</p>
+              </div>
+              <div class="legend-card lane-manual-box">
+                <span class="lane-tag lane-manual">Manual</span>
+                <p>Human-authored code. Default for untracked files.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Tracked Files (Provenance)</h3>
+              <span id="build-files-count-badge" class="count-pill">0 files</span>
+            </div>
+            <div id="build-files-list" class="item-cards">
+              <div class="empty-state">No tracked files in provenance.json.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Test Stage -->
+        <div id="view-test" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Configured Test Command</h3>
+            </div>
+            <div class="code-box" id="test-cmd-display">Loading testCommand from config.json...</div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title-row">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3>Execution Telemetry</h3>
+                <span id="test-status-line" class="badge badge-active">idle</span>
+                <small id="test-last-run">Last run: Never</small>
+              </div>
+              <button id="btn-test-cancel" class="btn btn-danger btn-sm" style="display: none;">Cancel Run</button>
+            </div>
+            <div id="test-log-console" class="terminal-box log-window" style="min-height: 200px;">
+              <div class="log-line info">[Test runner console ready]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Security Stage -->
+        <div id="view-security" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Configured Lint Command</h3>
+            </div>
+            <div class="code-box" id="security-cmd-display">Loading lintCommand from config.json...</div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title-row">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3>Lint Telemetry</h3>
+                <span id="security-status-line" class="badge badge-active">idle</span>
+                <small id="security-last-run">Last run: Never</small>
+              </div>
+              <button id="btn-security-cancel" class="btn btn-danger btn-sm" style="display: none;">Cancel Run</button>
+            </div>
+            <div id="security-log-console" class="terminal-box log-window" style="min-height: 140px;">
+              <div class="log-line info">[Security lint console ready]</div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Secret Scan Findings</h3>
+              <button id="btn-scan-secrets" class="btn btn-secondary btn-sm">Scan Now</button>
+            </div>
+            <div id="secret-findings-list" class="item-cards">
+              <div class="empty-state-sm">No secret scan run yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Release Stage (M8) -->
+        <div id="view-release" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Build Command</h3>
+              <code id="release-cmd-display" class="code-pill">(not configured in .buildtri/config.json)</code>
+            </div>
+            <div class="runner-status-bar">
+              <div>
+                <span id="release-status-line" class="badge badge-locked">idle</span>
+                <small id="release-last-run">Last run: Never</small>
+              </div>
+              <button id="btn-release-cancel" class="btn btn-danger btn-sm" style="display: none;">Cancel Run</button>
+            </div>
+            <div id="release-log-console" class="terminal-box log-window" style="min-height: 140px;">
+              <div class="log-line info">[Release build console ready]</div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-title-row">
+              <h3>Release Notes</h3>
+              <small>Appended to /.buildtri/release-notes.md upon completing release</small>
+            </div>
+            <div id="release-notes-list" class="item-cards">
+              <div class="empty-state-sm">No releases completed yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW: Deploy Stage (M8) -->
+        <div id="view-deploy" class="stage-view-panel" style="display: none;">
+          <div class="section-block">
+            <div class="alert-box" style="margin-bottom: 12px; padding: 10px; border-left: 3px solid var(--active-color); background: rgba(56, 139, 253, 0.1);">
+              <strong>Notice:</strong> Buildtri does NOT deploy anything and has no deploy command. Complete Deploy only records the verification and confirmation of readiness.
+            </div>
+            <div class="section-title-row">
+              <h3>Pre-Deployment Verification Checklist</h3>
+              <span id="deploy-checklist-count" class="count-pill">0 / 4</span>
+            </div>
+            <p style="font-size: 12px; margin-bottom: 10px; color: var(--fg-color); opacity: 0.8;">
+              All items must be confirmed before the Deploy gate can pass.
+            </p>
+            <div id="deploy-checklist-container" class="checklist-container" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Checklist items rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Inspector & Console -->
+      <aside class="inspector-column">
+        <div class="column-header">
+          <h3>Inspector &amp; Provenance</h3>
+        </div>
+
+        <!-- Provenance Section -->
+        <div class="inspector-card">
+          <div class="section-title-row">
+            <h4>Code Provenance</h4>
+            <span id="provenance-count-badge" class="count-pill">0 files</span>
+          </div>
+          <div id="provenance-list" class="provenance-entries">
+            <div class="empty-state-sm">No tracked files.</div>
+          </div>
+        </div>
+
+        <!-- Config Summary -->
+        <div class="inspector-card">
+          <h4>Workspace Config (.buildtri/config.json)</h4>
+          <pre id="config-summary" class="code-box">Loading configuration...</pre>
+        </div>
+
+        <!-- Run / Execution Console -->
+        <div class="inspector-card flex-grow">
+          <h4>Gate Execution Console</h4>
+          <div id="run-console" class="terminal-box">
+            <div class="log-line info">[Buildtri Extension Host connected]</div>
+            <div class="log-line info">[Ready for state handshake]</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Compare View Modal / Panel (M8) -->
+    <div id="compare-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card compare-card">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+          <h2>Lane comparison</h2>
+          <button id="btn-close-compare" class="btn btn-secondary btn-sm">Close</button>
+        </div>
+        <div class="modal-body" style="max-height: 75vh; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
+          <!-- 1. Files per lane -->
+          <div class="compare-section">
+            <div class="section-title-row">
+              <h4>Files per Lane</h4>
+            </div>
+            <div id="compare-lanes-container"></div>
+          </div>
+
+          <!-- 2. Change outcomes per lane (PASS/FAIL) -->
+          <div class="compare-section">
+            <div class="section-title-row">
+              <h4>Change Flow Outcomes per Lane</h4>
+            </div>
+            <div id="compare-changes-container"></div>
+          </div>
+
+          <!-- 3. Runs per gate with pass/fail and average duration -->
+          <div class="compare-section">
+            <div class="section-title-row">
+              <h4>Runs per Gate</h4>
+            </div>
+            <div id="compare-runs-container"></div>
+          </div>
+
+          <!-- 4. Current status of all 8 stages -->
+          <div class="compare-section">
+            <div class="section-title-row">
+              <h4>Stage Lifecycle Timeline</h4>
+            </div>
+            <div id="compare-timeline-container" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-area"></div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
