@@ -1,4 +1,4 @@
-# BUILD TRI — Stage-Gated AI SaaS IDE 
+# India's First Next-Gen Coding Workspace to Learn, Build & Release – 2027
 **BUILD TRI** is an advanced developer extension and framework for building software applications across 8 rigorous lifecycle stages with provenance tracking, automated secret scanning, test verification, traceability, and AI collaboration.
 
 ---
@@ -15,10 +15,6 @@
    - **Review**: Static security audits, code inspection, and secret detection.
    - **Release & Deploy**: Final release packaging, changelog generation, and deployment checks.
 
-2. **Three-Lane Development Model**:
-   - **Vibe**: Rapid AI-generated code requiring verification.
-   - **Hybrid**: Reviewed & approved human-AI collaborative code.
-   - **Manual**: Direct developer-authored implementations.
 
 3. **Integrated Tooling**:
    - **Command Runner**: Safe execution of test and security command suites.
